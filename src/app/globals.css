@@ -1,15 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Lora:wght@400;700&display=swap');
+/* Import Tailwind */
 @import "tailwindcss";
 
+/* Import Google Fonts */
+
+/* Theme variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-lora: 'Lora', serif;
 }
 
-@theme inline {
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-poppins);
+  --font-serif: var(--font-lora);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +26,101 @@
   }
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
+/* Global body styles */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  background: linear-gradient(to right, #eff6ff, #e6fffa); /* fallback for bg-gradient-to-r from-blue-50 to-teal-50 */
+  color: #2d3748; /* fallback for text-gray-800 */
+}
+
+.section-padding {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.heading-padding {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (min-width: 640px) {
+  .section-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+.header-glass-effect {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.border-gradient-to-r {
+  border-image: linear-gradient(to right, #5EEAD4 0%, transparent 50%, #5EEAD4 100%) 1;
+  border-style: solid;
+  border-width: 0 0 1px 0;
+}
+
+@layer base {
+  .font-lora {
+    font-family: 'Lora', serif;
+  }
+  .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+
+  /* Custom select styling for language switcher */
+  select {
+    background: transparent;
+    cursor: pointer;
+  }
+
+  select:focus {
+    outline: none;
+  }
+
+  /* Remove default select arrow */
+  select::-ms-expand {
+    display: none;
+  }
+
+  /* Swiper pagination styling */
+  .swiper-pagination-bullet {
+    background: #0D9488;
+    opacity: 0.6;
+    width: 10px;
+    height: 10px;
+  }
+  .swiper-pagination-bullet-active {
+    background: #0D9488;
+    opacity: 1;
+    transform: scale(1.3);
+  }
 }
