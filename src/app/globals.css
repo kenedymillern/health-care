@@ -1,18 +1,22 @@
+/* ==========================================================================
+   1. Imports
+   ========================================================================== */
+
+/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Lora:wght@400;700&display=swap');
+
 /* Import Tailwind */
 @import "tailwindcss";
 
-/* Import Google Fonts */
+/* ==========================================================================
+   2. Theme Variables
+   ========================================================================== */
 
-/* Theme variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
   --font-poppins: 'Poppins', sans-serif;
   --font-lora: 'Lora', serif;
-}
-
-:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-poppins);
@@ -26,53 +30,65 @@
   }
 }
 
-html, body {
+/* ==========================================================================
+   3. Global Styles
+   ========================================================================== */
+
+html,
+body {
   overflow-x: hidden;
 }
 
-/* Global body styles */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  background: linear-gradient(to right, #eff6ff, #e6fffa); /* fallback for bg-gradient-to-r from-blue-50 to-teal-50 */
-  color: #2d3748; /* fallback for text-gray-800 */
+  background: linear-gradient(to right, #eff6ff, #e6fffa); /* Fallback for bg-gradient-to-r from-blue-50 to-teal-50 */
+  color: #2d3748; /* Fallback for text-gray-800 */
 }
 
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f2610a;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e34905;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ==========================================================================
+   4. Utilities
+   ========================================================================== */
+
 .section-padding {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding: 4rem 1rem;
 }
 
 .heading-padding {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-}
-
-@media (min-width: 640px) {
-  .section-padding {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .section-padding {
-    padding-left: 3rem;
-    padding-right: 3rem;
-  }
+  padding: 1rem 2rem;
 }
 
 .glass-effect {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
 }
 
 .header-glass-effect {
@@ -88,10 +104,62 @@ body {
   border-width: 0 0 1px 0;
 }
 
+/* ==========================================================================
+   5. Animations
+   ========================================================================== */
+
+@keyframes pulse-slow {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2.5s infinite ease-in-out;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: ease-in-out;
+}
+
+/* Custom Animation for Bounce */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-bounce {
+  animation: bounce 1.5s infinite;
+}
+
+/* ==========================================================================
+   6. Media Queries
+   ========================================================================== */
+
+@media (min-width: 640px) {
+  .section-padding {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-padding {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+}
+
+/* ==========================================================================
+   7. Tailwind Layers (Custom Styles)
+   ========================================================================== */
+
 @layer base {
   .font-lora {
     font-family: 'Lora', serif;
   }
+
   .font-poppins {
     font-family: 'Poppins', sans-serif;
   }
@@ -118,9 +186,26 @@ body {
     width: 10px;
     height: 10px;
   }
+
   .swiper-pagination-bullet-active {
     background: #0D9488;
     opacity: 1;
     transform: scale(1.3);
+  }
+
+  /* Custom Pagination Bullets */
+  .swiper-pagination-bullet-custom {
+    background: #D4AF37;
+    opacity: 0.6;
+    width: 10px;
+    height: 10px;
+    transition: all 0.3s ease;
+  }
+
+  .swiper-pagination-bullet-custom:hover,
+  .swiper-pagination-bullet-custom-active {
+    opacity: 1;
+    transform: scale(1.3);
+    background: #FFD700;
   }
 }

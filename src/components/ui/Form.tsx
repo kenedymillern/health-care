@@ -2,7 +2,7 @@
 
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
-import { FaUser, FaEnvelope, FaPhone, FaComment } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaPhone, FaComment, FaPaperPlane } from 'react-icons/fa';
 
 type FormInput = {
   name: string;
@@ -20,127 +20,163 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
 
   // Form animation variants
   const formVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, scale: 0.95, y: 50 },
     visible: {
       opacity: 1,
+      scale: 1,
       y: 0,
       transition: {
         duration: 0.8,
         when: 'beforeChildren',
-        staggerChildren: 0.2,
+        staggerChildren: 0.15,
       },
     },
   };
 
   // Field animation variants
   const fieldVariants = {
-    hidden: { opacity: 0, x: -50 },
-    visible: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 120 } },
+    hidden: { opacity: 0, x: -30 },
+    visible: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } },
+  };
+
+  // Button animation variants
+  const buttonVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 120 } },
+    hover: { scale: 1.05, boxShadow: '0 12px 30px rgba(107, 70, 193, 0.4)' },
+    tap: { scale: 0.98 },
   };
 
   return (
-    <motion.section
-      variants={formVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      className="section-padding max-w-lg mx-auto relative bg-gradient-to-b from-teal-50/90 to-white/90 overflow-hidden glass-effect p-8 rounded-xl shadow-lg"
-    >
-      {/* Subtle heart pattern */}
-      <div className="absolute inset-0 bg-[url('/images/heart-pattern.jpg')] bg-repeat opacity-5"></div>
-      <motion.h2
-        variants={fieldVariants}
-        className="text-3xl sm:text-4xl font-lora font-bold text-center text-teal-700 drop-shadow-sm"
-      >
-        {title}
-      </motion.h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
-        <motion.div variants={fieldVariants} className="relative">
-          <label htmlFor="name" className="absolute -top-2 left-3 bg-white/80 px-2 text-sm font-poppins font-medium text-teal-700 transition-all duration-300">
-            <FaUser className="inline-block mr-1 text-teal-500" size={14} /> Name
-          </label>
-          <input
-            {...register('name', { required: 'Name is required' })}
-            id="name"
-            className="w-full p-3 pt-5 rounded-lg glass-effect text-gray-800 border border-teal-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-            aria-invalid={errors.name ? 'true' : 'false'}
-          />
-          {errors.name && (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-red-500 text-sm mt-1"
-            >
-              {errors.name.message}
-            </motion.p>
-          )}
-        </motion.div>
-        <motion.div variants={fieldVariants} className="relative">
-          <label htmlFor="email" className="absolute -top-2 left-3 bg-white/80 px-2 text-sm font-poppins font-medium text-teal-700 transition-all duration-300">
-            <FaEnvelope className="inline-block mr-1 text-teal-500" size={14} /> Email
-          </label>
-          <input
-            {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' } })}
-            id="email"
-            className="w-full p-3 pt-5 rounded-lg glass-effect text-gray-800 border border-teal-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-            aria-invalid={errors.email ? 'true' : 'false'}
-          />
-          {errors.email && (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-red-500 text-sm mt-1"
-            >
-              {errors.email.message}
-            </motion.p>
-          )}
-        </motion.div>
-        <motion.div variants={fieldVariants} className="relative">
-          <label htmlFor="phone" className="absolute -top-2 left-3 bg-white/80 px-2 text-sm font-poppins font-medium text-teal-700 transition-all duration-300">
-            <FaPhone className="inline-block mr-1 text-teal-500" size={14} /> Phone (Optional)
-          </label>
-          <input
-            {...register('phone')}
-            id="phone"
-            className="w-full p-3 pt-5 rounded-lg glass-effect text-gray-800 border border-teal-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-          />
-        </motion.div>
-        <motion.div variants={fieldVariants} className="relative">
-          <label htmlFor="message" className="absolute -top-2 left-3 bg-white/80 px-2 text-sm font-poppins font-medium text-teal-700 transition-all duration-300">
-            <FaComment className="inline-block mr-1 text-teal-500" size={14} /> Message
-          </label>
-          <textarea
-            {...register('message', { required: 'Message is required' })}
-            id="message"
-            className="w-full p-3 pt-5 rounded-lg glass-effect text-gray-800 border border-teal-200 focus:border-teal-500 focus:ring-2 focus:ring-teal-500 transition-all duration-300"
-            rows={5}
-            aria-invalid={errors.message ? 'true' : 'false'}
-          />
-          {errors.message && (
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-red-500 text-sm mt-1"
-            >
-              {errors.message.message}
-            </motion.p>
-          )}
-        </motion.div>
-        <motion.button
-          variants={fieldVariants}
-          whileHover={{ scale: 1.05, boxShadow: '0 8px 24px rgba(0, 125, 125, 0.3)' }}
-          whileTap={{ scale: 0.95 }}
-          type="submit"
-          className="w-full bg-gradient-to-r from-teal-500 to-teal-700 text-white py-3 rounded-lg font-poppins text-lg shadow-md hover:bg-teal-600 transition-all duration-300 relative overflow-hidden"
+    <section className="section-padding relative overflow-hidden bg-gradient-to-b from-[#6B46C1] via-[#4A2C2A] to-black">
+      <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-10 mix-blend-overlay"></div>
+      <div className="relative z-10 max-w-2xl mx-auto">
+        <motion.div
+          variants={formVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="glass-effect p-6 sm:p-8 lg:p-10 rounded-2xl shadow-2xl border border-white/20 bg-white/30 backdrop-blur-md"
         >
-          <span className="relative z-10">Submit</span>
+          {/* Header Section */}
           <motion.div
-            className="absolute inset-0 bg-teal-400/50"
-            animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          />
-        </motion.button>
-      </form>
-    </motion.section>
+            variants={fieldVariants}
+            className="text-center mb-8"
+          >
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-to-r from-[#D4AF37] to-[#FFD700] bg-clip-text drop-shadow-xl">
+              {title}
+            </h2>
+            <p className="mt-2 text-sm sm:text-base text-white/80 font-inter">
+              We’d love to hear from you. Fill out the form below to get in touch.
+            </p>
+          </motion.div>
+
+          {/* Form Container */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Name Field */}
+            <motion.div variants={fieldVariants} className="relative">
+              <label htmlFor="name" className="flex items-center text-sm sm:text-base font-inter text-white/90 mb-2">
+                <FaUser className="mr-2 text-[#D4AF37]" size={18} />
+                Name <span className="text-red-400 ml-1">*</span>
+              </label>
+              <input
+                {...register('name', { required: 'Name is required' })}
+                id="name"
+                className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
+                placeholder="Enter your name"
+                aria-invalid={errors.name ? 'true' : 'false'}
+              />
+              {errors.name && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-sm mt-1"
+                >
+                  {errors.name.message}
+                </motion.p>
+              )}
+            </motion.div>
+
+            {/* Email Field */}
+            <motion.div variants={fieldVariants} className="relative">
+              <label htmlFor="email" className="flex items-center text-sm sm:text-base font-inter text-white/90 mb-2">
+                <FaEnvelope className="mr-2 text-[#D4AF37]" size={18} />
+                Email <span className="text-red-400 ml-1">*</span>
+              </label>
+              <input
+                {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' } })}
+                id="email"
+                className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
+                placeholder="Enter your email"
+                aria-invalid={errors.email ? 'true' : 'false'}
+              />
+              {errors.email && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-sm mt-1"
+                >
+                  {errors.email.message}
+                </motion.p>
+              )}
+            </motion.div>
+
+            {/* Phone Field */}
+            <motion.div variants={fieldVariants} className="relative">
+              <label htmlFor="phone" className="flex items-center text-sm sm:text-base font-inter text-white/90 mb-2">
+                <FaPhone className="mr-2 text-[#D4AF37]" size={18} />
+                Phone (Optional)
+              </label>
+              <input
+                {...register('phone')}
+                id="phone"
+                className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
+                placeholder="Enter your phone number"
+              />
+            </motion.div>
+
+            {/* Message Field */}
+            <motion.div variants={fieldVariants} className="relative">
+              <label htmlFor="message" className="flex items-center text-sm sm:text-base font-inter text-white/90 mb-2">
+                <FaComment className="mr-2 text-[#D4AF37]" size={18} />
+                Message <span className="text-red-400 ml-1">*</span>
+              </label>
+              <textarea
+                {...register('message', { required: 'Message is required' })}
+                id="message"
+                className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
+                rows={4}
+                placeholder="Enter your message"
+                aria-invalid={errors.message ? 'true' : 'false'}
+              />
+              {errors.message && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-sm mt-1"
+                >
+                  {errors.message.message}
+                </motion.p>
+              )}
+            </motion.div>
+
+            {/* Submit Button */}
+            <motion.div variants={buttonVariants}>
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#4A2C2A] py-3 sm:py-4 rounded-xl font-playfair text-lg sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+              >
+                <span className="relative z-10">Send Message <FaPaperPlane className="inline ml-2 animate-bounce" size={18} /></span>
+                <motion.div
+                  className="absolute inset-0 bg-[#6B46C1]/30"
+                  animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.7, 0.5] }}
+                  transition={{ repeat: Infinity, duration: 2.5 }}
+                />
+              </button>
+            </motion.div>
+          </form>
+        </motion.div>
+      </div>
+    </section>
   );
 }

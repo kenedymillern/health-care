@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { FaHeart } from 'react-icons/fa';
+import Link from 'next/link';
 
 type WebBannerProps = {
   title: string;
@@ -12,8 +13,13 @@ type WebBannerProps = {
 
 export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
   const bannerVariants = {
-    hidden: { scale: 1.2, opacity: 0 },
-    visible: { scale: 1, opacity: 1, transition: { duration: 1.5, ease: 'easeOut' } },
+    hidden: { scale: 1.2, opacity: 0, filter: 'blur(10px)' },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      filter: 'blur(0px)',
+      transition: { duration: 1.5, ease: 'easeOut' },
+    },
   };
 
   const textVariants = {
@@ -26,7 +32,7 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
   };
 
   return (
-    <section className="relative h-[350px] sm:h-[450px] flex items-center justify-center overflow-hidden">
+    <section className="relative h-[400px] sm:h-[500px] md:h-[600px] flex items-center justify-center overflow-hidden">
       <motion.div
         variants={bannerVariants}
         initial="hidden"
@@ -37,14 +43,15 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
         <Image
           src={image}
           alt={title}
-          layout="fill"
+          fill
           objectFit="cover"
-          className="opacity-75"
+          className="brightness-75"
           priority
         />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1E3A8A]/60 via-[#0A2A43]/70 to-black/80"></div>
+        <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-15 mix-blend-overlay"></div>
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-b from-teal-700/50 to-transparent"></div>
-      <div className="relative text-center section-padding">
+      <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 py-12">
         <motion.div
           variants={textVariants}
           initial="hidden"
@@ -53,7 +60,7 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
           viewport={{ once: true }}
           className="flex justify-center mb-6"
         >
-          <FaHeart className="text-white/90 text-4xl animate-pulse" />
+          <FaHeart className="text-[#D4AF37] text-5xl sm:text-6xl animate-pulse-slow" />
         </motion.div>
         <motion.h1
           variants={textVariants}
@@ -61,7 +68,7 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
           whileInView="visible"
           custom={1}
           viewport={{ once: true }}
-          className="text-4xl sm:text-5xl font-lora font-bold text-white drop-shadow-lg"
+          className="text-4xl sm:text-5xl md:text-6xl font-playfair font-bold text-transparent bg-gradient-to-r from-[#D4AF37] to-[#FFD700] bg-clip-text drop-shadow-2xl"
         >
           {title}
         </motion.h1>
@@ -71,21 +78,24 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
           whileInView="visible"
           custom={2}
           viewport={{ once: true }}
-          className="mt-4 text-lg sm:text-xl text-white font-poppins drop-shadow-md"
+          className="mt-4 text-lg sm:text-xl md:text-2xl font-inter text-white/90 drop-shadow-lg max-w-2xl mx-auto"
         >
           {subtitle}
         </motion.p>
-        <motion.a
+        <motion.div
           variants={textVariants}
           initial="hidden"
           whileInView="visible"
           custom={3}
           viewport={{ once: true }}
-          href="/contact"
-          className="mt-6 inline-block bg-teal-500 text-white px-6 py-3 rounded-full font-poppins text-base shadow-lg hover:bg-teal-600 transition-colors duration-300"
         >
-          Learn More
-        </motion.a>
+          <Link
+            href="/contact"
+            className="mt-6 inline-block bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-inter text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:from-[#FFD700] hover:to-[#D4AF37]"
+          >
+            Learn More
+          </Link>
+        </motion.div>
       </div>
     </section>
   );

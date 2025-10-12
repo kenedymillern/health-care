@@ -1,47 +1,107 @@
 'use client';
 
+import React from 'react';
 import { motion } from 'framer-motion';
 import Hero from '@/components/ui/Hero';
 import ReviewCarousel from '@/components/ui/ReviewCarousel';
 import WebBanner from '@/components/ui/WebBanner';
 import Form from '@/components/ui/Form';
-import { FaHandsHelping, FaHeart, FaBed } from 'react-icons/fa';
 
 export default function Home() {
   return (
     <>
       <Hero />
-      <section className="section-padding bg-gradient-to-b from-teal-50/90 to-white/90 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/heart-pattern.jpg')] bg-repeat opacity-5"></div>
-        <motion.h2
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="text-3xl sm:text-4xl font-lora font-bold text-center text-teal-700 drop-shadow-sm"
-        >
-          Our Services
-        </motion.h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {[
-            { name: 'Personal Care', icon: <FaHandsHelping className="text-teal-500 text-3xl" />, description: 'Personalized assistance with daily tasks to promote independence and comfort.' },
-            { name: 'Companionship', icon: <FaHeart className="text-teal-500 text-3xl" />, description: 'Warm, engaging support to foster emotional well-being and connection.' },
-            { name: 'Respite Care', icon: <FaBed className="text-teal-500 text-3xl" />, description: 'Compassionate care to provide relief for family caregivers.' },
-          ].map((service, index) => (
+      <section className="section-padding relative overflow-hidden bg-gradient-to-b from-[#1E3A8A] via-[#0A2A43] to-black">
+        <div className="absolute inset-0 bg-[url('/images/home-care-bg.jpg')] bg-cover bg-center opacity-20"></div>
+        <div className="relative z-10">
+          {/* Curved Top Corners Wrapper */}
+          <div className="clip-path-curved-top bg-transparent">
             <motion.div
-              key={service.name}
-              initial={{ opacity: 0, y: 50, rotate: -5 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2, type: 'spring', stiffness: 120 }}
-              whileHover={{ scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.95)', boxShadow: '0 10px 30px rgba(0, 125, 125, 0.25)' }}
-              className="glass-effect p-6 rounded-xl text-center bg-white/60 shadow-md transition-all duration-300"
+              transition={{ duration: 0.8 }}
+              className="text-center"
             >
-              <div className="mb-4">{service.icon}</div>
-              <h3 className="text-xl font-lora font-bold text-teal-700">{service.name}</h3>
-              <p className="mt-3 font-poppins text-gray-600 text-sm">{service.description}</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-to-r from-[#D4AF37] to-[#FFD700] bg-clip-text drop-shadow-lg">
+                What We Do - Services We Offer
+              </h2>
+              <p className="mt-3 text-sm sm:text-base md:text-lg font-inter text-gray-200 max-w-2xl mx-auto">
+                We offer a wide range of services to care for elderly, disabled family members, or those in need, delivered with compassion and professionalism.
+              </p>
             </motion.div>
-          ))}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-12">
+              {[
+                {
+                  name: 'Personal Care',
+                  image: '/images/personal-care.jpg',
+                  description: 'Alzheimer’s and dementia care to live life to the fullest in a safe and secure environment.',
+                  bgGradient: 'from-teal-800 via-teal-900 to-black',
+                },
+                {
+                  name: 'Companionship Care',
+                  image: '/images/companionship-care.jpg',
+                  description: 'More than just care, we offer companionship, fostering social connection, and enriching lives.',
+                  bgGradient: 'from-green-800 via-green-900 to-black',
+                },
+                {
+                  name: 'View More Services',
+                  image: '/images/view-more-services.jpg',
+                  description: 'Explore all our home care services, tailored to meet your unique needs and preferences.',
+                  bgGradient: 'from-purple-800 via-purple-900 to-black',
+                },
+              ].map((service, index) => (
+                <motion.div
+                  key={service.name}
+                  initial={{ opacity: 0, scale: 0.5, y: 0, x: '50%' }} // Start small and centered
+                  whileInView={{ opacity: 1, scale: 1, y: 0, x: 0 }} // Expand to full view
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: index * 0.2, type: 'spring', stiffness: 80 }}
+                  whileHover={{
+                    background: 'linear-gradient(to right, blue, black)', // Blue to black
+                    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
+                  }}
+                  className={`relative rounded-2xl p-6 text-white shadow-xl overflow-hidden ${service.bgGradient} transition-all duration-300`}
+                >
+                  {/* Circular Image */}
+                  <div className="flex justify-center mb-6">
+                    <div className="relative w-48 h-48">
+                      <img
+                        src={service.image}
+                        alt={`${service.name} Image`}
+                        className="w-full h-full object-cover rounded-full border-4 border-white/40 shadow-lg"
+                      />
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#1E3A8A]/40 to-[#065F46]/40 blur-md" />
+                    </div>
+                  </div>
+                  {/* Service Name and Description with Overlay on Hover */}
+                  <div className="relative">
+                    <h3 className="text-2xl sm:text-3xl font-playfair font-bold text-center mb-4 text-[#D4AF37] drop-shadow-md">
+                      {service.name}
+                    </h3>
+                    <p className="text-base sm:text-lg font-inter text-white/90 text-center leading-relaxed">
+                      {service.description}
+                    </p>
+                    {/* Subtle Overlay on Hover for Text Readability */}
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 0.2 }}
+                      className="absolute inset-0 bg-black rounded-2xl pointer-events-none"
+                    />
+                  </div>
+                  {/* Arrow Button */}
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 20 }}
+                    className="mt-8 flex justify-center cursor-pointer"
+                  >
+                    <div className="w-12 h-12 bg-[#D4AF37]/80 rounded-full flex items-center justify-center hover:bg-[#FFD700] transition-colors duration-300">
+                      <span className="text-white font-bold text-2xl">→</span>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
       <ReviewCarousel />

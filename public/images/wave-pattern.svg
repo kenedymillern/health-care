@@ -1,0 +1,9 @@
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg" style="background: linear-gradient(to bottom, #1E3A8A, #000000);">
+  <defs>
+    <pattern id="wavePattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+      <path d="M0 50 Q25 0 50 50 T100 50" stroke="rgba(212, 175, 55, 0.1)" stroke-width="1" fill="none" opacity="0.3"/>
+      <path d="M0 100 Q25 50 50 100 T100 100" stroke="rgba(6, 95, 70, 0.1)" stroke-width="1" fill="none" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="200" fill="url(#wavePattern)"/>
+</svg>
