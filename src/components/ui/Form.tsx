@@ -48,7 +48,7 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
   };
 
   return (
-    <section className="section-padding relative overflow-hidden bg-gradient-to-b from-[#6B46C1] via-[#4A2C2A] to-black">
+    <section id='contact' className="section-padding relative overflow-hidden bg-gradient-to-b from-[#6B46C1] via-[#4A2C2A] to-black">
       <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-10 mix-blend-overlay"></div>
       <div className="relative z-10 max-w-2xl mx-auto">
         <motion.div

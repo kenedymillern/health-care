@@ -13,23 +13,40 @@
    ========================================================================== */
 
 :root {
-  --background: #ffffff;
+ --background: #ffffff;
   --foreground: #171717;
   --font-poppins: 'Poppins', sans-serif;
   --font-lora: 'Lora', serif;
+  --font-playfair: 'Playfair Display', serif;
+  --font-inter: 'Inter', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-poppins);
   --font-serif: var(--font-lora);
+  --primary: #0D9488; /* Teal for healthcare theme */
+  --secondary: #f2610a; /* Warm accent for buttons */
+  --accent: #e34905; /* Hover state for buttons */
+  --yellow: #D97706; /* Deep yellow for button */
+  --yellow-hover: #F59E0B; /* Lighter yellow for button hover */
+  --lilac-100: #E9D5FF; /* Light lilac for cards */
+  --lilac-200: #C4B5FD; /* Lilac for section background */
+  --purple-600: #7C3AED; /* Deep purple for gradient */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --primary: #5EEAD4;
+    --secondary: #ff8c00;
+    --accent: #ff6f00;
+    --yellow: #FBBF24;
+    --yellow-hover: #FCD34D;
+    --lilac-100: #D8B4FE;
+    --lilac-200: #A78BFA;
+    --purple-600: #A78BFA;
   }
 }
-
 /* ==========================================================================
    3. Global Styles
    ========================================================================== */
@@ -43,8 +60,10 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  background: linear-gradient(to right, #eff6ff, #e6fffa); /* Fallback for bg-gradient-to-r from-blue-50 to-teal-50 */
-  color: #2d3748; /* Fallback for text-gray-800 */
+  background: linear-gradient(to right, #eff6ff, #e6fffa);
+  /* Healthcare-inspired gradient */
+  color: #2d3748;
+  /* Text-gray-800 fallback */
 }
 
 /* Custom scrollbar */
@@ -57,12 +76,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #f2610a;
+  background: var(--primary);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #e34905;
+  background: var(--accent);
 }
 
 /* Smooth scrolling */
@@ -83,12 +102,29 @@ html {
 }
 
 .glass-effect {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent black for content */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1rem;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Lilac background classes */
+.bg-lilac-100\/50 {
+  background-color: rgba(233, 213, 255, 0.5); /* --lilac-100 with opacity */
+}
+
+.bg-lilac-100\/70 {
+  background-color: rgba(233, 213, 255, 0.7); /* --lilac-100 with higher opacity on hover */
+}
+
+.bg-lilac-200 {
+  background-color: var(--lilac-200);
+}
+
+.bg-purple-600 {
+  background-color: var(--purple-600);
 }
 
 .header-glass-effect {
@@ -99,23 +135,48 @@ html {
 }
 
 .border-gradient-to-r {
-  border-image: linear-gradient(to right, #5EEAD4 0%, transparent 50%, #5EEAD4 100%) 1;
+  border-image: linear-gradient(to right, var(--primary) 0%, transparent 50%, var(--primary) 100%) 1;
   border-style: solid;
   border-width: 0 0 1px 0;
+}
+
+/* Updated carousel-glass for background */
+.carousel-glass {
+  background: rgba(0, 0, 0, 0.2); /* Lighter overlay to keep background visible */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 /* ==========================================================================
    5. Animations
    ========================================================================== */
 
-@keyframes pulse-slow {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+/* Pulse-glow for yellow button */
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.5); /* Using --yellow */
+  }
+  50% {
+    box-shadow: 0 0 20px 10px rgba(217, 119, 6, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(217, 119, 6, 0);
+  }
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 2.5s infinite ease-in-out;
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+/* Smooth fade for carousel transitions */
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .transition-all {
@@ -125,12 +186,36 @@ html {
 
 /* Custom Animation for Bounce */
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .animate-bounce {
   animation: bounce 1.5s infinite;
+}
+
+/* Carousel indicator animation */
+@keyframes scale-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.carousel-indicator-active {
+  animation: scale-pulse 1.5s infinite ease-in-out;
 }
 
 /* ==========================================================================
@@ -179,33 +264,39 @@ html {
     display: none;
   }
 
-  /* Swiper pagination styling */
-  .swiper-pagination-bullet {
-    background: #0D9488;
-    opacity: 0.6;
-    width: 10px;
-    height: 10px;
+  /* Carousel indicator styling */
+  .carousel-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
   }
 
-  .swiper-pagination-bullet-active {
-    background: #0D9488;
-    opacity: 1;
+  .carousel-indicator-active {
+    background: var(--primary);
     transform: scale(1.3);
   }
 
-  /* Custom Pagination Bullets */
+  /* Custom pagination styling */
   .swiper-pagination-bullet-custom {
-    background: #D4AF37;
+    background: var(--purple-600);
     opacity: 0.6;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     transition: all 0.3s ease;
   }
 
   .swiper-pagination-bullet-custom:hover,
   .swiper-pagination-bullet-custom-active {
     opacity: 1;
-    transform: scale(1.3);
-    background: #FFD700;
+    transform: scale(1.4);
+    background: var(--lilac-200);
+  }
+
+  @media (min-width: 759px) and (max-width: 1020px) {
+    .container {
+      max-width: 740px; /* Slightly smaller container for better spacing */
+    }
   }
 }

@@ -61,13 +61,15 @@ export default function Footer() {
             <div className="flex items-center mb-6">
               <div className="relative mr-3">
                 <Image
-                  src="/images/logo.jpg"
-                  alt="Pleasant Home Care Logo"
-                  width={48}
-                  height={48}
-                  className="rounded-full shadow-md border-2 border-white/30"
+                  src="/images/logo3.png"
+                  alt="Rich Healthcare Services Logo"
+                  width={120}
+                  height={84}
+                  className="object-contain"
+                  priority
+                  sizes="(max-width: 640px) 60px, (max-width: 1024px) 70px, 80px"
                 />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#1E3A8A]/30 to-[#065F46]/30 blur-md" />
+                {/* <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#1E3A8A]/30 to-[#065F46]/30 blur-md" /> */}
               </div>
               <div>
                 <h3 className="text-2xl font-playfair font-bold">Pleasant Home Care</h3>

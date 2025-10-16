@@ -6,6 +6,7 @@ import Hero from '@/components/ui/Hero';
 import ReviewCarousel from '@/components/ui/ReviewCarousel';
 import WebBanner from '@/components/ui/WebBanner';
 import Form from '@/components/ui/Form';
+import FAQ from '@/components/ui/FAQ';
 
 export default function Home() {
   return (
@@ -36,19 +37,16 @@ export default function Home() {
                   name: 'Personal Care',
                   image: '/images/personal-care.jpg',
                   description: 'Alzheimer’s and dementia care to live life to the fullest in a safe and secure environment.',
-                  bgGradient: 'from-teal-800 via-teal-900 to-black',
                 },
                 {
                   name: 'Companionship Care',
                   image: '/images/companionship-care.jpg',
                   description: 'More than just care, we offer companionship, fostering social connection, and enriching lives.',
-                  bgGradient: 'from-green-800 via-green-900 to-black',
                 },
                 {
                   name: 'View More Services',
                   image: '/images/view-more-services.jpg',
                   description: 'Explore all our home care services, tailored to meet your unique needs and preferences.',
-                  bgGradient: 'from-purple-800 via-purple-900 to-black',
                 },
               ].map((service, index) => (
                 <motion.div
@@ -61,7 +59,7 @@ export default function Home() {
                     background: 'linear-gradient(to right, blue, black)', // Blue to black
                     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
                   }}
-                  className={`relative rounded-2xl p-6 text-white shadow-xl overflow-hidden ${service.bgGradient} transition-all duration-300`}
+                  className={`relative rounded-2xl p-6 text-white shadow-xl overflow-hidden bg-black transition-all duration-300`}
                 >
                   {/* Circular Image */}
                   <div className="flex justify-center mb-6">
@@ -111,6 +109,7 @@ export default function Home() {
         image="/images/why-choose-us.jpg"
       />
       <Form title="Set An Appointment" />
+      <FAQ />
     </>
   );
 }

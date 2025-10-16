@@ -14,14 +14,14 @@ export default function Header() {
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Services', href: '/services' },
-    { name: 'Reviews', href: '/reviews' },
-    { name: 'Blog', href: '/blog' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Reviews', href: '#reviews' },
+    { name: 'Career', href: '/career' },
+    { name: 'Contact Us', href: '#contact' },
   ];
 
   const contactInfo = [
     { icon: FaPhone, label: '(555) 123-4567', href: 'tel:+15551234567', key: 'phone' },
-    { icon: FaEnvelope, label: 'info@pleasanthomecare.net', href: 'mailto:info@pleasanthomecare.net', key: 'email' },
+    { icon: FaEnvelope, label: 'info@richhealthcare.net', href: 'mailto:info@richhealthcare.net', key: 'email' },
     { icon: FaMapMarkerAlt, label: '123 Care St, Atlanta, GA 30301', href: 'https://maps.google.com/?q=123+Care+St,+Atlanta,+GA+30301', key: 'address' },
   ];
 
@@ -84,6 +84,11 @@ export default function Header() {
     open: { rotate: 90, scale: 1.1, transition: { type: 'spring', stiffness: 200 } },
   };
 
+  const logoVariants = {
+    rest: { scale: 1, rotate: 0 },
+    hover: { scale: 1.1, rotate: 5, transition: { type: 'spring', stiffness: 200, damping: 10 } },
+  };
+
   return (
     <motion.header
       variants={headerVariants}
@@ -102,26 +107,26 @@ export default function Header() {
         variants={topBarVariants}
         initial="hidden"
         animate="visible"
-        className="bg-gradient-to-r from-[#1E3A8A]/80 to-[#065F46]/80 py-3 sm:py-4"
+        className="bg-gradient-to-r from-[#1E3A8A]/80 to-[#065F46]/80 py-2 sm:py-2 md:py-3"
         style={{
           backdropFilter: 'blur(8px)',
           WebkitBackdropFilter: 'blur(8px)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
         }}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:flex-wrap sm:justify-between sm:items-center space-y-3 sm:space-y-0 text-sm">
-          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-6 sm:space-y-0 lg:space-x-8">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:flex-wrap sm:justify-between sm:items-center space-y-3 sm:space-y-0 text-xs sm:text-sm md:text-sm">
+          <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-4 md:space-x-6 sm:space-y-0 lg:space-x-8">
             {contactInfo.map((item) => (
               <motion.a
                 key={item.key}
                 variants={contactItemVariants}
                 whileHover="hover"
                 href={item.href}
-                className="flex items-center space-x-3 hover:text-[#D4AF37] transition-colors duration-300 group"
+                className="flex items-center space-x-2 md:space-x-3 hover:text-[#D4AF37] transition-colors duration-300 group"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <item.icon className="text-white group-hover:text-[#D4AF37] group-hover:scale-110 transition-all duration-300" size={18} />
+                <item.icon className="text-white group-hover:text-[#D4AF37] group-hover:scale-110 transition-all duration-300" size={16} />
                 <span className="font-inter text-white/90 group-hover:text-[#D4AF37]">{item.label}</span>
               </motion.a>
             ))}
@@ -129,12 +134,12 @@ export default function Header() {
           {/* Language Switcher */}
           <motion.div
             variants={langSwitcherVariants}
-            className="relative flex items-center bg-white/10 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 shadow-md border border-white/20"
+            className="relative flex items-center bg-white/10 rounded-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 shadow-md border border-white/20"
           >
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value)}
-              className="appearance-none bg-transparent text-white font-inter text-xs sm:text-sm font-medium pr-8 pl-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] rounded-full cursor-pointer"
+              className="appearance-none bg-transparent text-white font-inter text-xs sm:text-sm md:text-sm font-medium pr-6 pl-1.5 py-0.5 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] rounded-full cursor-pointer"
               aria-label="Select Language"
             >
               {languages.map((language) => (
@@ -144,9 +149,9 @@ export default function Header() {
               ))}
             </select>
             <svg
-              className="absolute right-2 sm:right-3 text-[#D4AF37] pointer-events-none"
-              width="16"
-              height="16"
+              className="absolute right-1 sm:right-2 md:right-3 text-[#D4AF37] pointer-events-none"
+              width="14"
+              height="14"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -159,32 +164,28 @@ export default function Header() {
       </motion.div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 md:py-5 flex justify-between items-center">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 sm:space-x-4" title="Pleasant Home Care Home Page">
+        <Link href="/" className="flex items-center space-x-2 sm:space-x-3 md:space-x-4" title="Rich Healthcare Services Home Page">
           <motion.div
-            variants={{
-              rest: { scale: 1, rotate: 0 },
-              hover: { scale: 1.1, rotate: 5 },
-            }}
+            variants={logoVariants}
             initial="rest"
             whileHover="hover"
             animate="rest"
-            transition={{ type: 'spring', stiffness: 200 }}
             className="relative"
           >
             <Image
-              src="/images/logo.jpg"
-              alt="Pleasant Home Care Logo"
-              width={48}
-              height={48}
-              className="md:w-[64px] md:h-[64px] rounded-full shadow-lg border-2 border-white/30"
+              src="/images/logo3.png"
+              alt="Rich Healthcare Services Logo"
+              width={120}
+              height={84}
+              className="object-contain"
               priority
+              sizes="(max-width: 640px) 60px, (max-width: 759px) 70px, (max-width: 1020px) 90px, 100px"
             />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#1E3A8A]/30 to-[#065F46]/30 blur-md" />
           </motion.div>
-          <span className="text-2xl sm:text-3xl md:text-4xl font-playfair font-bold text-white drop-shadow-md">
-            Pleasant Home Care
+          <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-playfair font-bold text-white drop-shadow-md">
+            Pleasant Care
           </span>
         </Link>
 
@@ -193,7 +194,7 @@ export default function Header() {
           variants={navContainerVariants}
           initial="hidden"
           animate="visible"
-          className="hidden md:flex items-center space-x-6 lg:space-x-10"
+          className="hidden lg:flex items-center space-x-4 lg:space-x-8 xl:space-x-10"
         >
           {navItems.map((item) => (
             <motion.div
@@ -202,13 +203,13 @@ export default function Header() {
               whileHover="hover"
               whileTap="tap"
             >
-              <Link
+              <a
                 href={item.href}
-                className="text-base lg:text-lg font-inter text-white/90 hover:text-[#D4AF37] transition-colors duration-300 relative group"
+                className="text-sm lg:text-base xl:text-lg font-inter text-white/90 hover:text-[#D4AF37] transition-colors duration-300 relative group"
               >
                 {item.name}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#D4AF37] group-hover:w-full transition-all duration-300" />
-              </Link>
+              </a>
             </motion.div>
           ))}
           <motion.a
@@ -216,7 +217,7 @@ export default function Header() {
             whileHover="hover"
             whileTap="tap"
             href="/contact"
-            className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-full font-inter text-base md:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-2.5 md:py-2.5 lg:py-3 rounded-full font-inter text-sm md:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
           >
             Get Started
           </motion.a>
@@ -227,12 +228,12 @@ export default function Header() {
           variants={hamburgerVariants}
           animate={isOpen ? 'open' : 'closed'}
           whileTap="tap"
-          className="md:hidden text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] rounded p-2 cursor-pointer"
+          className="lg:hidden text-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37] rounded p-2 cursor-pointer"
           onClick={() => setIsOpen(!isOpen)}
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isOpen}
         >
-          {isOpen ? <FaTimes size={30} /> : <FaBars size={30} />}
+          {isOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
         </motion.button>
       </div>
 
@@ -244,7 +245,7 @@ export default function Header() {
             initial="closed"
             animate="open"
             exit="closed"
-            className="md:hidden bg-gradient-to-b from-[#1E3A8A]/95 to-[#065F46]/95 shadow-xl"
+            className="lg:hidden bg-gradient-to-b from-[#1E3A8A]/95 to-[#065F46]/95 shadow-xl"
             style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
           >
             <motion.div
@@ -263,7 +264,7 @@ export default function Header() {
                 >
                   <Link
                     href={item.href}
-                    className="text-xl font-inter text-white hover:text-[#D4AF37] transition-colors duration-300 block py-2"
+                    className="text-lg sm:text-xl font-inter text-white hover:text-[#D4AF37] transition-colors duration-300 block py-2"
                     onClick={() => setIsOpen(false)}
                   >
                     {item.name}
@@ -276,7 +277,7 @@ export default function Header() {
                 whileHover="hover"
                 whileTap="tap"
                 href="/contact"
-                className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-8 py-4 rounded-full font-inter text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-center"
+                className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-8 py-4 rounded-full font-inter text-lg sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 text-center"
                 onClick={() => setIsOpen(false)}
               >
                 Get Started
