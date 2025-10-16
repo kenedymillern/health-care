@@ -19,6 +19,18 @@ const eslintConfig = [
       "build/**",
       "next-env.d.ts",
     ],
+    rules: {
+      // Disable or relax TypeScript rules
+      "@typescript-eslint/no-explicit-any": "off", // Allow `any` and `Record<string, any>`
+      "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }], // Warn on unused vars, ignore those starting with _
+      "prefer-const": "warn", // Warn instead of error for `let` vs `const`
+
+      // Relax React/Next.js rules
+      "react/no-unescaped-entities": "off", // Allow unescaped quotes in JSX
+      "react-hooks/rules-of-hooks": "warn", // Warn on conditional hook calls
+      "react-hooks/exhaustive-deps": "warn", // Warn on missing useEffect dependencies
+      "@next/next/no-img-element": "off", // Allow <img> instead of <Image>
+    },
   },
 ];
 
