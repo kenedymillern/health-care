@@ -62,7 +62,7 @@ export default function FAQ() {
         transition={{ duration: 0.8 }}
         className="relative z-10 text-center"
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-black drop-shadow-xl" role="heading" aria-level="2">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-black drop-shadow-xl" role="heading" aria-level={2}>
           Frequently Asked Questions
         </h2>
         <p className="mt-4 text-sm sm:text-base md:text-lg font-inter text-black max-w-3xl mx-auto">
