@@ -36,13 +36,13 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
   // Field animation variants
   const fieldVariants = {
     hidden: { opacity: 0, x: -30 },
-    visible: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 100, damping: 15 } },
+    visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 100, damping: 15 } },
   };
 
   // Button animation variants
   const buttonVariants = {
     hidden: { opacity: 0, y: 30 },
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 120 } },
+    visible: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 120 } },
     hover: { scale: 1.05, boxShadow: '0 12px 30px rgba(107, 70, 193, 0.4)' },
     tap: { scale: 0.98 },
   };

@@ -14,12 +14,12 @@ type WebBannerProps = {
 export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
   const bannerVariants = {
     hidden: { scale: 1.2, opacity: 0, filter: 'blur(10px)' },
-    visible: {
+    visible: (i: number) => ({
       scale: 1,
       opacity: 1,
       filter: 'blur(0px)',
-      transition: { duration: 1.5, ease: 'easeOut' },
-    },
+      transition: { duration: 1.5, delay: i * 0.2 },
+    }),
   };
 
   const textVariants = {
@@ -27,7 +27,7 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.8, delay: i * 0.2, type: 'spring', stiffness: 120 },
+      transition: { duration: 0.8, delay: i * 0.2, type: 'spring' as const, stiffness: 120 },
     }),
   };
 

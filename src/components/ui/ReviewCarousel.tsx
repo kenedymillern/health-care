@@ -54,7 +54,7 @@ export default function ReviewCarousel() {
       scale: 1,
       opacity: 1,
       rotate: 0,
-      transition: { delay: i * 0.15, type: 'spring', stiffness: 200, damping: 10 },
+      transition: { delay: i * 0.15, type: 'spring' as const, stiffness: 200, damping: 10 },
     }),
   };
 
@@ -64,7 +64,7 @@ export default function ReviewCarousel() {
       opacity: 1,
       scale: 1,
       y: 0,
-      transition: { duration: 0.7, delay: i * 0.3, type: 'spring', stiffness: 120, damping: 12 },
+      transition: { duration: 0.7, delay: i * 0.3, type: 'spring' as const, stiffness: 120, damping: 12 },
     }),
     hover: { 
       scale: 1.05, 
