@@ -43,13 +43,13 @@ export default function FAQ() {
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, delay: i * 0.2, type: 'spring', stiffness: 100 },
+      transition: { duration: 0.6, delay: i * 0.2 },
     }),
   };
 
   const answerVariants = {
     hidden: { height: 0, opacity: 0 },
-    visible: { height: 'auto', opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+    visible: (i: number) => ({ height: 'auto', opacity: 1, transition: { duration: 0.5, delay: i * 0.2  } }),
   };
 
   return (
