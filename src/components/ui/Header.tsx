@@ -36,10 +36,10 @@ export default function Header() {
     { code: 'ru', name: 'Russian', flag: '🇷🇺' },
   ];
 
-  // Animation variants
+  // Sub-element animations only
   const topBarVariants = {
     hidden: { opacity: 0, y: -20 },
-    visible: (i: number) => ({ opacity: 1, y: 0, transition: { duration: 0.6, delay: i * 0.2 , staggerChildren: 0.1 } }),
+    visible: (i: number) => ({ opacity: 1, y: 0, transition: { duration: 0.6, delay: i * 0.2 } }),
   };
 
   const contactItemVariants = {
@@ -51,11 +51,6 @@ export default function Header() {
   const langSwitcherVariants = {
     hidden: { opacity: 0, x: 10 },
     visible: { opacity: 1, x: 0, transition: { type: 'spring' as const, stiffness: 150 } },
-  };
-
-  const headerVariants = {
-    hidden: { y: -100, opacity: 0 },
-    visible: (i: number) => ({ y: 0, opacity: 1, transition: { duration: 0.8, delay: i * 0.2 , when: 'beforeChildren' } }),
   };
 
   const navContainerVariants = {
@@ -90,10 +85,7 @@ export default function Header() {
   };
 
   return (
-    <motion.header
-      variants={headerVariants}
-      initial="hidden"
-      animate="visible"
+    <header
       className="sticky top-0 z-50 bg-gradient-to-r from-[#1E3A8A] to-[#065F46] text-white shadow-lg"
       style={{
         backdropFilter: 'blur(12px)',
@@ -105,7 +97,7 @@ export default function Header() {
       {/* Top Contact Bar */}
       <motion.div
         variants={topBarVariants}
-        initial="hidden"
+        initial="visible"
         animate="visible"
         className="bg-gradient-to-r from-[#1E3A8A]/80 to-[#065F46]/80 py-2 sm:py-2 md:py-3"
         style={{
@@ -134,6 +126,8 @@ export default function Header() {
           {/* Language Switcher */}
           <motion.div
             variants={langSwitcherVariants}
+            initial="visible"
+            animate="visible"
             className="relative flex items-center bg-white/10 rounded-full px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 shadow-md border border-white/20"
           >
             <select
@@ -181,7 +175,6 @@ export default function Header() {
               height={84}
               className="object-contain"
               priority
-              sizes="(max-width: 640px) 60px, (max-width: 759px) 70px, (max-width: 1020px) 90px, 100px"
             />
           </motion.div>
           <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-playfair font-bold text-white drop-shadow-md">
@@ -192,7 +185,7 @@ export default function Header() {
         {/* Desktop Navigation */}
         <motion.nav
           variants={navContainerVariants}
-          initial="hidden"
+          initial="visible"
           animate="visible"
           className="hidden lg:flex items-center space-x-4 lg:space-x-8 xl:space-x-10"
         >
@@ -286,6 +279,6 @@ export default function Header() {
           </motion.nav>
         )}
       </AnimatePresence>
-    </motion.header>
+    </header>
   );
 }

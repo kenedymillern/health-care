@@ -112,9 +112,9 @@ export default function Footer() {
                 { name: 'Home', href: '/' },
                 { name: 'About Us', href: '/about' },
                 { name: 'Services', href: '/services' },
-                { name: 'Reviews', href: '/reviews' },
-                { name: 'Blog', href: '/blog' },
-                { name: 'Contact', href: '/contact' },
+                { name: 'Reviews', href: '#reviews' },
+                { name: 'Career', href: '/career' },
+                { name: 'Contact Us', href: '#contact' },
                 { name: 'Get Started', href: '/contact' },
               ].map((link) => (
                 <motion.li
@@ -122,12 +122,12 @@ export default function Footer() {
                   whileHover={{ x: 8 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                  <Link
+                  <a
                     href={link.href}
                     className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter"
                   >
                     {link.name}
-                  </Link>
+                  </a>
                 </motion.li>
               ))}
             </ul>
