@@ -51,7 +51,7 @@ export default function Hero() {
   const doorVariants = {
     closed: { x: 0 },
     open: (side: string) => ({
-      x: side === 'left' ? '-75%' : '75%', // leave 25% visible
+      x: side === 'left' ? '-85%' : '85%', // leave 25% visible
       transition: { duration: 1.8, delay: 0.6 },
     }),
   };
@@ -79,7 +79,7 @@ export default function Hero() {
         <motion.div
           className="door-panel door-panel-left relative"
           style={{
-            backgroundImage: 'url(/images/door.webp)',
+            backgroundImage: 'url(/images/door_left.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -96,7 +96,7 @@ export default function Hero() {
         <motion.div
           className="door-panel door-panel-right relative"
           style={{
-            backgroundImage: 'url(/images/door.webp)',
+            backgroundImage: 'url(/images/door_right.png)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
@@ -120,25 +120,27 @@ export default function Hero() {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
-            className="bg-black/50 backdrop-blur-md rounded-xl p-6 md:p-10 glass-effect -mt-30"
+            className="p-6 md:p-10 -mt-30"
             variants={contentVariants}
             initial="initial"
             animate="animate"
             exit="exit"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-lora font-bold text-white drop-shadow-md">
+            <h1 className="text-2xl sm:text-3xl font-lora font-bold text-white drop-shadow-md">
               {slides[currentSlide].title}
             </h1>
-            <p className="mt-4 text-lg sm:text-xl text-gray-100 font-poppins drop-shadow-sm">
+            <p className="mt-4 text-lg text-gray-100 font-poppins drop-shadow-sm">
               {slides[currentSlide].description}
             </p>
-            <div className="mt-8">
-              <a
+            <div className="mt-8 cursor-pointer">
+              <motion.a
+                whileHover="hover"
+                whileTap="tap"
                 href="/contact"
-                className="inline-block bg-yellow-600 text-gray-900 px-8 py-3 rounded-full font-poppins text-lg hover:bg-yellow-500 transition animate-pulse-glow"
+                className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-3 py-2 rounded-full font-inter text-sm md:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
               >
-                Get in Touch
-              </a>
+                See More
+              </motion.a>
             </div>
           </motion.div>
         </AnimatePresence>
@@ -149,9 +151,8 @@ export default function Hero() {
             <button
               key={index}
               onClick={() => setCurrentSlide(index)}
-              className={`carousel-indicator ${
-                currentSlide === index ? 'carousel-indicator-active' : ''
-              }`}
+              className={`carousel-indicator ${currentSlide === index ? 'carousel-indicator-active' : ''
+                }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}

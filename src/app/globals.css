@@ -266,7 +266,7 @@ html {
     height: 12px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.5);
-    transition: all 0.3s ease;
+    transition: background-color 0.3s;
   }
 
   .carousel-indicator-active {
@@ -282,7 +282,7 @@ html {
     overflow: hidden;
     display: flex;
   }
-  
+
   .door-panel {
     width: 50%;
     height: 100%;

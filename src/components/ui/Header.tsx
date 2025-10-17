@@ -158,7 +158,7 @@ export default function Header() {
       </motion.div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4 md:py-5 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-2 sm:space-x-3 md:space-x-4" title="Rich Healthcare Services Home Page">
           <motion.div
@@ -210,7 +210,7 @@ export default function Header() {
             whileHover="hover"
             whileTap="tap"
             href="/contact"
-            className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-3 sm:px-4 md:px-5 lg:px-6 py-2 sm:py-2.5 md:py-2.5 lg:py-3 rounded-full font-inter text-sm md:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+            className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-3 py-2 rounded-full font-inter text-sm md:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
           >
             Get Started
           </motion.a>
