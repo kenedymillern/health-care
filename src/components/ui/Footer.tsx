@@ -20,7 +20,7 @@ export default function Footer() {
   const { register, handleSubmit, formState: { errors } } = useForm<NewsletterInput>();
 
   const onSubmit: SubmitHandler<NewsletterInput> = (data) => {
-    console.log(data);
+    console.log('Newsletter subscription:', data);
   };
 
   const scrollToTop = () => {
@@ -35,7 +35,8 @@ export default function Footer() {
       style={{
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        background: 'linear-gradient(90deg, rgba(30, 58, 138, 0.9) 0%, rgba(6, 95, 70, 0.9) 100%)',
+        background:
+          'linear-gradient(90deg, rgba(30, 58, 138, 0.9) 0%, rgba(6, 95, 70, 0.9) 100%)',
       }}
     >
       {/* Back to Top Button */}
@@ -62,22 +63,26 @@ export default function Footer() {
               <div className="relative mr-3">
                 <Image
                   src="/images/logo3.png"
-                  alt="Rich Healthcare Services Logo"
+                  alt="Pleasant Home Care Logo"
                   width={120}
                   height={84}
                   className="object-contain"
                   priority
-                  sizes="(max-width: 640px) 60px, (max-width: 1024px) 70px, 80px"
                 />
-                {/* <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#1E3A8A]/30 to-[#065F46]/30 blur-md" /> */}
               </div>
               <div>
-                <h3 className="text-2xl font-playfair font-bold">Pleasant Home Care</h3>
-                <p className="text-sm text-gray-300 font-inter">Compassionate Care Services</p>
+                <h3 className="text-2xl font-playfair font-bold">
+                  Pleasant Home Care
+                </h3>
+                <p className="text-sm text-gray-300 font-inter">
+                  Compassionate Care Services
+                </p>
               </div>
             </div>
             <p className="text-gray-300 mb-6 leading-relaxed max-w-md font-inter">
-              Your trusted partner for compassionate home care services. We provide personalized care plans to ensure comfort and well-being for you and your loved ones.
+              Your trusted partner for compassionate home care services. We
+              provide personalized care plans to ensure comfort and well-being
+              for you and your loved ones.
             </p>
             {/* Social Media */}
             <div className="flex space-x-4">
@@ -90,11 +95,13 @@ export default function Footer() {
                 <motion.a
                   key={social.name}
                   href={social.href}
+                  aria-label={social.name}
                   className="w-10 h-10 bg-white/10 hover:bg-gradient-to-r hover:from-[#D4AF37] hover:to-[#FFD700] rounded-full flex items-center justify-center transition-colors"
                   whileHover={{ scale: 1.1 }}
-                  aria-label={social.name}
                 >
-                  <span className="text-sm font-bold font-inter">{social.initial}</span>
+                  <span className="text-sm font-bold font-inter">
+                    {social.initial}
+                  </span>
                 </motion.a>
               ))}
             </div>
@@ -106,7 +113,9 @@ export default function Footer() {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h4 className="text-lg font-playfair font-semibold mb-6">Quick Links</h4>
+            <h4 className="text-lg font-playfair font-semibold mb-6">
+              Quick Links
+            </h4>
             <ul className="space-y-3">
               {[
                 { name: 'Home', href: '/' },
@@ -114,7 +123,7 @@ export default function Footer() {
                 { name: 'Services', href: '/services' },
                 { name: 'Reviews', href: '#reviews' },
                 { name: 'Career', href: '/career' },
-                { name: 'Contact Us', href: '#contact' },
+                { name: 'Contact Us', href: '/contact' },
                 { name: 'Get Started', href: '/contact' },
               ].map((link) => (
                 <motion.li
@@ -122,12 +131,12 @@ export default function Footer() {
                   whileHover={{ x: 8 }}
                   transition={{ type: 'spring', stiffness: 300 }}
                 >
-                  <a
+                  <Link
                     href={link.href}
                     className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </motion.li>
               ))}
             </ul>
@@ -139,24 +148,36 @@ export default function Footer() {
             whileInView={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
           >
-            <h4 className="text-lg font-playfair font-semibold mb-6">Contact Info</h4>
+            <h4 className="text-lg font-playfair font-semibold mb-6">
+              Contact Info
+            </h4>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <PhoneIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
-                  <a href="tel:+15551234567" className="text-gray-300 hover:text-white transition-colors font-inter">
+                  <a
+                    href="tel:+15551234567"
+                    className="text-gray-300 hover:text-white transition-colors font-inter"
+                  >
                     (555) 123-4567
                   </a>
-                  <p className="text-xs text-gray-400 font-inter">Mon - Sat: 8AM - 6PM</p>
+                  <p className="text-xs text-gray-400 font-inter">
+                    Mon - Sat: 8AM - 6PM
+                  </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <EnvelopeIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
-                  <a href="mailto:info@pleasanthomecare.net" className="text-gray-300 hover:text-white transition-colors font-inter">
+                  <a
+                    href="mailto:info@pleasanthomecare.net"
+                    className="text-gray-300 hover:text-white transition-colors font-inter"
+                  >
                     info@pleasanthomecare.net
                   </a>
-                  <p className="text-xs text-gray-400 font-inter">We reply within 24 hours</p>
+                  <p className="text-xs text-gray-400 font-inter">
+                    We reply within 24 hours
+                  </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -170,7 +191,9 @@ export default function Footer() {
                 <ClockIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300 font-inter">Mon - Sat: 8AM - 6PM</p>
-                  <p className="text-xs text-gray-400 font-inter">Sunday: Closed</p>
+                  <p className="text-xs text-gray-400 font-inter">
+                    Sunday: Closed
+                  </p>
                 </div>
               </div>
             </div>
@@ -185,13 +208,21 @@ export default function Footer() {
           className="border-t border-white/20 pt-8 mb-8"
         >
           <div className="max-w-md mx-auto text-center">
-            <h4 className="text-lg font-playfair font-semibold mb-4">Stay Updated</h4>
-            <p className="text-gray-300 mb-6 font-inter">Receive the latest care tips, updates, and special offers directly to your inbox.</p>
+            <h4 className="text-lg font-playfair font-semibold mb-4">
+              Stay Updated
+            </h4>
+            <p className="text-gray-300 mb-6 font-inter">
+              Receive the latest care tips, updates, and special offers directly
+              to your inbox.
+            </p>
             <form onSubmit={handleSubmit(onSubmit)} className="flex">
               <input
                 {...register('email', {
                   required: 'Email is required',
-                  pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' },
+                  pattern: {
+                    value: /^\S+@\S+$/i,
+                    message: 'Invalid email',
+                  },
                 })}
                 placeholder="Enter your email"
                 className="flex-1 px-4 py-3 bg-white/10 border border-white/20 rounded-l-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#D4AF37] font-inter"
@@ -206,7 +237,9 @@ export default function Footer() {
               </motion.button>
             </form>
             {errors.email && (
-              <p className="text-red-200 text-sm mt-2 font-inter">{errors.email.message}</p>
+              <p className="text-red-200 text-sm mt-2 font-inter">
+                {errors.email.message}
+              </p>
             )}
           </div>
         </motion.div>
@@ -218,17 +251,28 @@ export default function Footer() {
               © {currentYear} Pleasant Home Care. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center space-x-6 text-sm">
-              <Link href="#" className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter">
+              <Link
+                href="#"
+                className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter"
+              >
                 Privacy Policy
               </Link>
-              <Link href="#" className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter">
+              <Link
+                href="#"
+                className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter"
+              >
                 Terms of Service
               </Link>
-              <Link href="#" className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter">
+              <Link
+                href="#"
+                className="text-gray-300 hover:text-[#D4AF37] transition-colors font-inter"
+              >
                 Cookie Policy
               </Link>
               <span className="text-gray-500">|</span>
-              <span className="text-gray-300 font-inter">Made with ❤️ in Atlanta</span>
+              <span className="text-gray-300 font-inter">
+                Made with ❤️ in Atlanta
+              </span>
             </div>
           </div>
         </div>
