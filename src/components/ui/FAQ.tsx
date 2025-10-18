@@ -53,7 +53,7 @@ export default function FAQ() {
   };
 
   return (
-    <section className="section-padding relative overflow-hidden bg-gradient-to-b from-lilac-200 to-purple-600">
+    <section className="section-padding relative overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
       <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-15"></div>
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -62,10 +62,10 @@ export default function FAQ() {
         transition={{ duration: 0.8 }}
         className="relative z-10 text-center"
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-black drop-shadow-xl" role="heading" aria-level={2}>
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-white drop-shadow-xl" role="heading" aria-level={2}>
           Frequently Asked Questions
         </h2>
-        <p className="mt-4 text-sm sm:text-base md:text-lg font-inter text-black max-w-3xl mx-auto">
+        <p className="mt-4 text-sm sm:text-base md:text-lg font-inter text-white max-w-3xl mx-auto">
           Find answers to common questions about our compassionate healthcare services.
         </p>
       </motion.div>
