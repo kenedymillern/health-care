@@ -1,47 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const slides = [
-  { title: 'Compassionate Home Care', description: 'Providing personalized care to support your loved ones at home.' },
-  { title: 'Expert Medical Support', description: 'Skilled professionals delivering top-tier medical assistance.' },
-  { title: 'Holistic Wellness Plans', description: 'Tailored wellness programs to enhance quality of life.' },
-  { title: '24/7 Care Availability', description: 'Round-the-clock support for peace of mind.' },
-  { title: 'Rehabilitation Services', description: 'Specialized care to aid recovery and independence.' },
-];
+import { motion } from 'framer-motion';
 
 export default function Hero() {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [isDoorOpen, setIsDoorOpen] = useState(false);
   const [doorsLoaded, setDoorsLoaded] = useState(false);
 
-  // Preload door images
+  // Simulate loading effect (like waiting for images before opening)
   useEffect(() => {
-    const left = new Image();
-    const right = new Image();
-    let loadedCount = 0;
+    const timeout = setTimeout(() => {
+      setDoorsLoaded(true);
+      setTimeout(() => setIsDoorOpen(true), 400); // open after small delay
+    }, 600); // simulate preload
 
-    const handleLoad = () => {
-      loadedCount += 1;
-      if (loadedCount === 2) {
-        setDoorsLoaded(true);
-        setTimeout(() => setIsDoorOpen(true), 400); // open after load
-      }
-    };
-
-    left.src = '/images/door_left.png';
-    right.src = '/images/door_right.png';
-    left.onload = handleLoad;
-    right.onload = handleLoad;
-  }, []);
-
-  // Auto-rotate carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 7000);
-    return () => clearInterval(interval);
+    return () => clearTimeout(timeout);
   }, []);
 
   const doorVariants = {
@@ -59,99 +32,49 @@ export default function Hero() {
       scale: 1,
       transition: { duration: 1, delay: 1.2 },
     },
-    exit: { opacity: 0, scale: 0.9, transition: { duration: 0.6, delay: 1.2 } },
   };
 
   return (
-    <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-blue-900">
-      {/* Sliding Doors */}
+    <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
+      {/* Sliding White Doors */}
       <div className="door-container absolute inset-0 z-20 flex">
+        {/* Left Door */}
         <motion.div
-          className="door-panel door-panel-left relative"
-          style={{
-            backgroundImage: 'url(/images/door_left.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          className="door-panel flex-1 bg-white"
           variants={doorVariants}
           initial="closed"
           animate={isDoorOpen ? 'open' : 'closed'}
           custom="left"
-        >
-          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-r from-black/70 via-black/30 to-transparent shadow-2xl"></div>
-        </motion.div>
+        />
 
+        {/* Right Door */}
         <motion.div
-          className="door-panel door-panel-right relative"
-          style={{
-            backgroundImage: 'url(/images/door_right.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          className="door-panel flex-1 bg-white"
           variants={doorVariants}
           initial="closed"
           animate={isDoorOpen ? 'open' : 'closed'}
           custom="right"
-        >
-          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-l from-black/70 via-black/30 to-transparent shadow-2xl"></div>
-        </motion.div>
+        />
       </div>
 
-      {/* Carousel Content (only show after doors are loaded) */}
+      {/* Hero Content */}
       {doorsLoaded && (
         <motion.div
-          className="relative text-center max-w-[90%] mx-auto z-10 px-4"
+          className="relative text-center max-w-[90%] mx-auto z-10 px-4 -mt-30"
           variants={contentVariants}
           initial="initial"
           animate="animate"
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentSlide}
-              className="p-6 md:p-10 -mt-30"
-              variants={contentVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <h1 className="text-2xl sm:text-3xl font-lora font-bold text-white drop-shadow-md">
-                {slides[currentSlide].title}
-              </h1>
-              <p className="mt-4 text-lg text-gray-100 font-poppins drop-shadow-sm">
-                {slides[currentSlide].description}
-              </p>
-              <div className="mt-8 cursor-pointer">
-                <motion.a
-                  whileHover="hover"
-                  whileTap="tap"
-                  href="/contact"
-                  className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-3 py-2 rounded-full font-inter text-sm md:text-base lg:text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  See More
-                </motion.a>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Carousel Indicators */}
-          <motion.div
-            variants={contentVariants}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex space-x-3"
-          >
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`carousel-indicator ${
-                  currentSlide === index ? 'carousel-indicator-active' : ''
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </motion.div>
+          <div className="p-6 md:p-10">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-lora leading-tight drop-shadow-lg text-white">
+              Unlocking <span className="text-yellow-400">Health Solutions</span>
+              <br />
+              for Real <span className="text-yellow-400">Impact</span>
+            </h1>
+            <p className="mt-6 text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 font-poppins drop-shadow-sm">
+              Providing personalized care to support your loved ones at home.
+            </p>
+          </div>
         </motion.div>
       )}
     </section>

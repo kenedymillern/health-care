@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <section className="section-padding relative overflow-hidden bg-gradient-to-b from-[#1E3A8A] via-[#0A2A43] to-black">
+      <section className="section-padding relative overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
         <div className="absolute inset-0 bg-[url('/images/home-care-bg.jpg')] bg-cover bg-center opacity-20"></div>
         <div className="relative z-10">
           {/* Curved Top Corners Wrapper */}
@@ -51,15 +51,15 @@ export default function Home() {
               ].map((service, index) => (
                 <motion.div
                   key={service.name}
-                  initial={{ opacity: 0, scale: 0.5, y: 0, x: '50%' }} // Start small and centered
+                  initial={{ opacity: 0, scale: 0.5, y: 0, x: '50%' }}
                   whileInView={{ opacity: 1, scale: 1, y: 0, x: 0 }} // Expand to full view
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: index * 0.2, type: 'spring', stiffness: 80 }}
                   whileHover={{
-                    background: 'linear-gradient(to right, blue, black)', // Blue to black
+                    background: 'linear-gradient(to right, #1E3A8A, #065F46)',
                     boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
                   }}
-                  className={`relative rounded-2xl p-6 text-white shadow-xl overflow-hidden bg-black transition-all duration-300`}
+                  className={`relative rounded-2xl p-6 text-white shadow-xl overflow-hidden bg-gray-800 transition-all duration-300`}
                 >
                   {/* Circular Image */}
                   <div className="flex justify-center mb-6">
