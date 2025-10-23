@@ -3,19 +3,61 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { FaUser, FaEnvelope, FaPhone, FaComment, FaPaperPlane } from 'react-icons/fa';
+import { useMutation } from '@tanstack/react-query';
+import { useApp } from '@/context/app-context';
+import toast from 'react-hot-toast';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-type FormInput = {
-  name: string;
-  email: string;
-  phone?: string;
-  message: string;
-};
+// Define Zod schema for form validation
+const contactSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be 100 characters or less'),
+  email: z.string().email('Invalid email format'),
+  phone: z.string().max(20, 'Phone number must be 20 characters or less').optional(),
+  message: z.string().min(1, 'Message is required').max(1000, 'Message must be 1000 characters or less'),
+});
+
+// Infer TypeScript type from Zod schema
+type FormInput = z.infer<typeof contactSchema>;
 
 export default function Form({ title = 'Contact Us' }: { title?: string }) {
-  const { register, handleSubmit, formState: { errors } } = useForm<FormInput>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormInput>({
+    resolver: zodResolver(contactSchema),
+  });
+  const { actions } = useApp();
+
+  const mutation = useMutation({
+    mutationFn: async (data: FormInput) => {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit contact form');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      toast.success('Message sent successfully!');
+      reset(); // Clear form fields
+      actions.setLoading(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to send message');
+      actions.setLoading(false);
+    },
+  });
 
   const onSubmit: SubmitHandler<FormInput> = (data) => {
-    console.log(data); // Replace with API call
+    actions.setLoading(true);
+    mutation.mutate(data);
   };
 
   // Form animation variants
@@ -48,7 +90,7 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
   };
 
   return (
-    <section id='contact' className="section-padding relative overflow-hidden bg-white">
+    <section id="contact" className="section-padding relative overflow-hidden bg-white">
       <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-10 mix-blend-overlay"></div>
       <div className="relative z-10 max-w-2xl mx-auto">
         <motion.div
@@ -59,10 +101,7 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
           className="p-6 sm:p-8 lg:p-10 rounded-2xl shadow-2xl border border-white/20 bg-white/30 bg-gradient-to-r from-[#1E3A8A] to-[#065F46] backdrop-blur-md"
         >
           {/* Header Section */}
-          <motion.div
-            variants={fieldVariants}
-            className="text-center mb-8"
-          >
+          <motion.div variants={fieldVariants} className="text-center mb-8">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-transparent bg-gradient-to-r from-[#D4AF37] to-[#FFD700] bg-clip-text drop-shadow-xl">
               {title}
             </h2>
@@ -80,7 +119,7 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
                 Name <span className="text-red-400 ml-1">*</span>
               </label>
               <input
-                {...register('name', { required: 'Name is required' })}
+                {...register('name')}
                 id="name"
                 className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
                 placeholder="Enter your name"
@@ -104,7 +143,7 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
                 Email <span className="text-red-400 ml-1">*</span>
               </label>
               <input
-                {...register('email', { required: 'Email is required', pattern: { value: /^\S+@\S+$/i, message: 'Invalid email' } })}
+                {...register('email')}
                 id="email"
                 className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
                 placeholder="Enter your email"
@@ -133,6 +172,15 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
                 className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
                 placeholder="Enter your phone number"
               />
+              {errors.phone && (
+                <motion.p
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-400 text-sm mt-1"
+                >
+                  {errors.phone.message}
+                </motion.p>
+              )}
             </motion.div>
 
             {/* Message Field */}
@@ -142,7 +190,7 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
                 Message <span className="text-red-400 ml-1">*</span>
               </label>
               <textarea
-                {...register('message', { required: 'Message is required' })}
+                {...register('message')}
                 id="message"
                 className="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 placeholder-white/60"
                 rows={4}
@@ -164,9 +212,13 @@ export default function Form({ title = 'Contact Us' }: { title?: string }) {
             <motion.div variants={buttonVariants}>
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#4A2C2A] py-3 sm:py-4 rounded-xl font-playfair text-lg sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+                disabled={mutation.isPending}
+                className="w-full bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#4A2C2A] py-3 sm:py-4 rounded-xl font-playfair text-lg sm:text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden disabled:opacity-50 cursor-pointer"
               >
-                <span className="relative z-10">Send Message <FaPaperPlane className="inline ml-2 animate-bounce" size={18} /></span>
+                <span className="relative z-10">
+                  {mutation.isPending ? 'Sending...' : 'Send Message'}{' '}
+                  <FaPaperPlane className="inline ml-2 animate-bounce" size={18} />
+                </span>
                 <motion.div
                   className="absolute inset-0 bg-[#6B46C1]/30"
                   animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.7, 0.5] }}

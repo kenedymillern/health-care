@@ -156,10 +156,10 @@ export default function Footer() {
                 <PhoneIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
                   <a
-                    href="tel:+15551234567"
+                    href="tel:+12817257475"
                     className="text-gray-300 hover:text-white transition-colors font-inter"
                   >
-                    (555) 123-4567
+                    +1 (281) 725-7475
                   </a>
                   <p className="text-xs text-gray-400 font-inter">
                     Mon - Sat: 8AM - 6PM
@@ -170,10 +170,10 @@ export default function Footer() {
                 <EnvelopeIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
                   <a
-                    href="mailto:info@pleasanthomecare.net"
+                    href="mailto:eutrivhealth@gmail.com"
                     className="text-gray-300 hover:text-white transition-colors font-inter"
                   >
-                    info@pleasanthomecare.net
+                    eutrivhealth@gmail.com
                   </a>
                   <p className="text-xs text-gray-400 font-inter">
                     We reply within 24 hours
@@ -248,7 +248,7 @@ export default function Footer() {
         <div className="border-t border-white/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-300 text-sm mb-4 md:mb-0 font-inter">
-              © {currentYear} Pleasant Home Care. All rights reserved.
+              © {currentYear} EUTRIV Health Care. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center space-x-6 text-sm">
               <Link
