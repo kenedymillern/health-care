@@ -8,7 +8,7 @@ import Footer from '@/components/ui/Footer';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Pleasant Home Care',
+  title: 'EUTRIV Health Care',
   description: 'Premium home care services with compassion and quality.',
 };
 

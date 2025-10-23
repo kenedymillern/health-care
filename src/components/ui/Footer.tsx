@@ -72,7 +72,7 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="text-2xl font-playfair font-bold">
-                  Pleasant Home Care
+                  EUTRIV Health Care
                 </h3>
                 <p className="text-sm text-gray-300 font-inter">
                   Compassionate Care Services

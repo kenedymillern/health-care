@@ -53,14 +53,14 @@ export default function Career() {
       <section className="relative h-[100vh] w-full">
         <Image
           src="/images/career-hero.jpg"
-          alt="Career at Pleasant Home Care"
+          alt="Career at EUTRIV Health Care"
           fill
           className="object-cover"
           priority
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <h1 className="text-3xl sm:text-5xl font-bold text-white drop-shadow-lg">
-            Careers at Pleasant Home Care
+            Careers at EUTRIV Health Care
           </h1>
         </div>
       </section>
@@ -71,13 +71,13 @@ export default function Career() {
           Join our home care team and make a positive difference.
         </h2>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Pleasant Home Care delivers exceptional home care services for seniors,
+          EUTRIV Health Care delivers exceptional home care services for seniors,
           injured, and disabled individuals. We focus on pairing clients with
           caregivers who meet their specific needs. All our caregivers undergo
           thorough background checks and credential verification.
         </p>
         <p className="text-gray-600 leading-relaxed mb-6">
-          Joining Pleasant Home Care offers the chance to work in a dynamic and
+          Joining EUTRIV Health Care offers the chance to work in a dynamic and
           positive environment. Complete the form below to get started.
         </p>
         <div className="text-gray-800 font-medium">

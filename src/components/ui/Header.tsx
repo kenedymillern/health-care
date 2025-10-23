@@ -28,14 +28,14 @@ export default function Header() {
   const contactInfo = [
     {
       icon: FaPhone,
-      label: "(555) 123-4567",
-      href: "tel:+15551234567",
+      label: "+1 (281) 725-7475",
+      href: "tel:+12817257475",
       key: "phone",
     },
     {
       icon: FaEnvelope,
-      label: "info@richhealthcare.net",
-      href: "mailto:info@richhealthcare.net",
+      label: "eutrivhealth@gmail.com",
+      href: "mailto:eutrivhealth@gmail.com",
       key: "email",
     },
     {
@@ -50,11 +50,11 @@ export default function Header() {
     { code: "en", name: "English", flag: "🇺🇳" },
     { code: "es", name: "Spanish", flag: "🇪🇸" },
     { code: "fr", name: "French", flag: "🇫🇷" },
-    { code: "de", name: "German", flag: "🇩🇪" },
+    // { code: "de", name: "German", flag: "🇩🇪" },
     { code: "zh", name: "Chinese", flag: "🇨🇳" },
-    { code: "pt", name: "Portuguese", flag: "🇵🇹" },
-    { code: "ar", name: "Arabic", flag: "🇸🇦" },
-    { code: "ru", name: "Russian", flag: "🇷🇺" },
+    // { code: "pt", name: "Portuguese", flag: "🇵🇹" },
+    // { code: "ar", name: "Arabic", flag: "🇸🇦" },
+    // { code: "ru", name: "Russian", flag: "🇷🇺" },
   ];
 
   // Motion Variants
@@ -257,7 +257,7 @@ export default function Header() {
             />
           </motion.div>
           <span className="text-lg md:text-xl lg:text-2xl font-playfair font-bold text-white drop-shadow-md">
-            Pleasant Care
+            EUTRIV Health Care
           </span>
         </Link>
 
