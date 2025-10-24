@@ -8,13 +8,13 @@ export interface Service {
   updatedAt?: Date;
 }
 
-export interface Career {
+export interface CareerData {
   _id?: ObjectId;
   fullName: string;
   email: string;
   phoneNumber: string;
   position: string;
-  resume: string; // URL or path to the uploaded resume file
+  resume: string;
   message: string;
   createdAt?: Date;
   updatedAt?: Date;

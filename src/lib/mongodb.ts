@@ -1,42 +1,54 @@
 import { MongoClient, Db } from 'mongodb';
+import retry from 'async-retry';
 
-const uri = process.env.MONGODB_URI
-const dbName = process.env.MONGODB_DB
-
-// Validate environment variables
-if (!uri || !dbName) {
-  throw new Error('MONGODB_URI and MONGODB_DB must be defined in .env.local');
-}
-
-// Global cache for MongoDB client and database
-interface MongoCache {
+interface Cached {
   client: MongoClient | null;
   db: Db | null;
 }
 
-declare global {
-  // eslint-disable-next-line no-var
-  var mongo: MongoCache | undefined;
-}
-
-let cached: MongoCache = global.mongo || { client: null, db: null };
-
-if (!global.mongo) {
-  global.mongo = cached;
-}
+const cached: Cached = {
+  client: null,
+  db: null,
+};
 
 export async function connectToDatabase(): Promise<Db> {
-  if (cached.db) {
+  if (cached.client && cached.db) {
     return cached.db;
   }
 
+  const MONGODB_URI = process.env.MONGODB_URI;
+  const MONGODB_DB = process.env.MONGODB_DB;
+
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI is not defined in environment variables');
+  }
+  if (!MONGODB_DB) {
+    throw new Error('MONGODB_DB is not defined in environment variables');
+  }
+
   try {
-    if (!cached.client) {
-      cached.client = new MongoClient(`${uri}`);
-      await cached.client.connect();
-      console.log('Connected to MongoDB');
-    }
-    cached.db = cached.client.db(dbName);
+    const client = await retry(
+      async () => {
+        const mongoClient = new MongoClient(MONGODB_URI, {
+          serverSelectionTimeoutMS: 5000, // Timeout after 5 seconds
+        });
+        await mongoClient.connect();
+        console.log('Connected to MongoDB');
+        return mongoClient;
+      },
+      {
+        retries: 3,
+        factor: 2,
+        minTimeout: 1000,
+        maxTimeout: 5000,
+        onRetry: (err, attempt) => {
+          console.warn(`MongoDB connection attempt ${attempt} failed:`, err);
+        },
+      }
+    );
+
+    cached.client = client;
+    cached.db = client.db(MONGODB_DB);
     return cached.db;
   } catch (error) {
     console.error('MongoDB connection error:', error);
@@ -46,11 +58,10 @@ export async function connectToDatabase(): Promise<Db> {
   }
 }
 
-export async function closeDatabaseConnection(): Promise<void> {
+// Gracefully close MongoDB connection on process termination
+process.on('SIGTERM', async () => {
   if (cached.client) {
     await cached.client.close();
-    cached.client = null;
-    cached.db = null;
     console.log('MongoDB connection closed');
   }
-}
+});
