@@ -6,18 +6,40 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import { useState } from "react";
-import { useMutation } from '@tanstack/react-query';
-import { useApp } from '@/context/app-context';
-import toast from 'react-hot-toast';
-import { CareerData } from '@/types';
+import { useState, useEffect, useCallback } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useApp } from "@/context/app-context";
+import toast from "react-hot-toast";
+import { CareerData } from "@/types";
+import sanitizeHtml from "sanitize-html";
 
-// Zod Schema
+// Extend Window interface to include grecaptcha and optional callbacks
+declare global {
+  interface Window {
+    grecaptcha: {
+      render: (container: string | HTMLElement, parameters: { [key: string]: string | Function }) => void;
+      reset: () => void;
+      execute: () => void;
+    };
+    onRecaptchaSuccess?: (token: string) => void;
+    onRecaptchaExpired?: () => void;
+  }
+}
+
+// Zod Schema with updated regex validation
 const careerSchema = z.object({
-  fullName: z.string().min(2, "Full name must be at least 2 characters").max(100, "Full name must be 100 characters or less"),
+  fullName: z
+    .string()
+    .min(2, "Full name must be at least 2 characters")
+    .max(100, "Full name must be 100 characters or less")
+    .regex(/^[a-zA-Z\s]*$/, "Full name can only contain letters and spaces"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(8, "Phone number must be at least 8 characters").max(20, "Phone number must be 20 characters or less"),
-  position: z.string().min(2, "Position must be at least 2 characters").max(100, "Position must be 100 characters or less"),
+  position: z
+    .string()
+    .min(2, "Position must be at least 2 characters")
+    .max(100, "Position must be 100 characters or less")
+    .regex(/^[a-zA-Z\s]*$/, "Position can only contain letters and spaces"),
   resume: z
     .instanceof(File)
     .optional()
@@ -37,10 +59,16 @@ const careerSchema = z.object({
       "Only PDF and Word (.doc, .docx) files are allowed"
     ),
   message: z.string().min(1, "Message is required").max(1000, "Message must be 1000 characters or less"),
+  recaptchaToken: z.string().min(1, "Please complete the reCAPTCHA verification"),
 });
 
-// TypeScript type
 type CareerFormInputs = z.infer<typeof careerSchema>;
+
+// Sanitization configuration
+const sanitizeOptions = {
+  allowedTags: [],
+  allowedAttributes: {},
+};
 
 export default function Career() {
   const {
@@ -57,45 +85,99 @@ export default function Career() {
   const [fileName, setFileName] = useState<string | null>(null);
   const { actions } = useApp();
   const [retryCount, setRetryCount] = useState(0);
+  const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+  const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle reCAPTCHA v2 callback
+  const handleRecaptcha = useCallback(
+    (token: string) => {
+      setValue("recaptchaToken", token, { shouldValidate: true });
+      setIsRecaptchaVerified(true);
+    },
+    [setValue]
+  );
+
+  // Handle reCAPTCHA expiration or reset
+  const handleRecaptchaExpired = useCallback(() => {
+    if (!isSubmitting) {
+      setValue("recaptchaToken", "", { shouldValidate: true });
+      setIsRecaptchaVerified(false);
+    }
+  }, [setValue, isSubmitting]);
+
+  // Load reCAPTCHA v2 script
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://www.google.com/recaptcha/api.js";
+    script.async = true;
+    script.onload = () => setRecaptchaLoaded(true);
+    document.body.appendChild(script);
+
+    window.onRecaptchaSuccess = handleRecaptcha;
+    window.onRecaptchaExpired = handleRecaptchaExpired;
+
+    return () => {
+      document.body.removeChild(script);
+      if (window.onRecaptchaSuccess) {
+        delete window.onRecaptchaSuccess;
+      }
+      if (window.onRecaptchaExpired) {
+        delete window.onRecaptchaExpired;
+      }
+    };
+  }, [handleRecaptcha, handleRecaptchaExpired]);
 
   const mutation = useMutation({
     mutationFn: async (data: CareerFormInputs) => {
       const formData = new FormData();
-      formData.append('fullName', data.fullName);
-      formData.append('email', data.email);
-      formData.append('phoneNumber', data.phone);
-      formData.append('position', data.position);
-      formData.append('message', data.message);
-      formData.append('resume', data.resume!);
+      formData.append("fullName", sanitizeHtml(data.fullName, sanitizeOptions));
+      formData.append("email", data.email);
+      formData.append("phoneNumber", data.phone);
+      formData.append("position", sanitizeHtml(data.position, sanitizeOptions));
+      formData.append("message", sanitizeHtml(data.message, sanitizeOptions));
+      formData.append("resume", data.resume!);
+      formData.append("recaptchaToken", data.recaptchaToken);
 
-      const response = await fetch('/api/career', {
-        method: 'POST',
+      const response = await fetch("/api/career", {
+        method: "POST",
         body: formData,
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit application');
+        throw new Error(errorData.error || "Failed to submit application");
       }
       return response.json() as Promise<CareerData>;
     },
     onMutate: () => {
-      setRetryCount(0); // Reset retry count on new submission
+      setRetryCount(0);
+      setIsSubmitting(true);
     },
     onSuccess: () => {
-      toast.success('Application submitted successfully!');
+      toast.success("Application submitted successfully!");
       reset();
       setFileName(null);
       actions.setLoading(false);
       setRetryCount(0);
+      setIsRecaptchaVerified(false);
+      setIsSubmitting(false);
+      if (window.grecaptcha) {
+        window.grecaptcha.reset();
+      }
     },
     onError: (error: any) => {
-      if (error.message.includes('Cloudinary') && retryCount < 3) {
+      if (error.message.includes("Cloudinary") && retryCount < 3) {
         setRetryCount((prev) => prev + 1);
-        toast.error(`Retrying upload (${retryCount + 1}/3)...`, { id: 'retry-toast' });
+        toast.error(`Retrying upload (${retryCount + 1}/3)...`, { id: "retry-toast" });
       } else {
-        toast.error(error.message || 'Failed to submit application');
+        toast.error(error.message || "Failed to submit application");
         actions.setLoading(false);
         setRetryCount(0);
+        setIsRecaptchaVerified(false);
+        setIsSubmitting(false);
+        if (window.grecaptcha) {
+          window.grecaptcha.reset();
+        }
       }
     },
   });
@@ -201,9 +283,9 @@ export default function Career() {
                   required: true,
                   autoFocus: false,
                 }}
-                inputClass="!w-full !pl-12 !pr-3 !py-3 !border !rounded-lg"
+                inputClass="!w-full !pl-12 !pr-3 !py-6 !border !rounded-lg !focus:ring !focus:ring-blue-300"
                 dropdownClass="!text-black"
-                containerClass="!w-full"
+                containerClass="!w-full !rounded-lg"
                 onChange={(value) => {
                   setValue("phone", value, { shouldValidate: true });
                 }}
@@ -241,7 +323,10 @@ export default function Career() {
                   const file = e.target.files?.[0];
                   if (file) {
                     setValue("resume", file, { shouldValidate: true });
-                    setFileName(`${file.name} (${Math.round(file.size / 1024)} KB)`);
+                    const sanitizedFileName = sanitizeHtml(file.name, sanitizeOptions);
+                    setFileName(
+                      `${sanitizedFileName} (${Math.round(file.size / 1024)} KB)`
+                    );
                   } else {
                     setValue("resume", undefined, { shouldValidate: true });
                     setFileName(null);
@@ -249,7 +334,9 @@ export default function Career() {
                 }}
               />
               {fileName && (
-                <p className="text-sm text-gray-600 mt-2">📄 {fileName}</p>
+                <p className="text-sm text-gray-600 mt-2">
+                  📄 {fileName}
+                </p>
               )}
               {errors.resume && (
                 <p className="text-red-500 text-sm">{errors.resume.message}</p>
@@ -271,15 +358,46 @@ export default function Career() {
               )}
             </div>
 
+            {/* reCAPTCHA v2 Checkbox */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Verify You're Not a Robot
+              </label>
+              {recaptchaLoaded && (
+                <div
+                  className="g-recaptcha"
+                  data-sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE_KEY}
+                  data-callback="onRecaptchaSuccess"
+                  data-expired-callback="onRecaptchaExpired"
+                ></div>
+              )}
+              {errors.recaptchaToken && (
+                <p className="text-red-500 text-sm mt-2">{errors.recaptchaToken.message}</p>
+              )}
+            </div>
+
+            {/* reCAPTCHA Notice */}
+            <div className="text-sm text-gray-600">
+              This site is protected by reCAPTCHA and the Google{" "}
+              <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>{" "}
+              and{" "}
+              <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">
+                Terms of Service
+              </a>{" "}
+              apply.
+            </div>
+
             {/* Submit */}
             <button
               type="submit"
-              disabled={mutation.isPending}
-              className="w-full py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition disabled:opacity-50 cursor-pointer"
+              disabled={mutation.isPending || !recaptchaLoaded || !isRecaptchaVerified}
+              className="w-full py-3 bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {mutation.isPending ? (
                 <span className="flex items-center justify-center">
-                  {retryCount > 0 ? `Retrying (${retryCount}/3)` : 'Submitting'}
+                  {retryCount > 0 ? `Retrying (${retryCount}/3)` : "Submitting"}
                   <svg
                     className="animate-spin ml-2 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
@@ -302,7 +420,7 @@ export default function Career() {
                   </svg>
                 </span>
               ) : (
-                'Submit Application'
+                "Submit Application"
               )}
             </button>
           </form>
