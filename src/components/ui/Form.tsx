@@ -42,7 +42,7 @@ const contactSchema = z.object({
 // Infer TypeScript type from Zod schema
 type FormInput = z.infer<typeof contactSchema>;
 
-export default function Form({ title = "Contact Us" }: { title?: string }) {
+export default function Form({ title = "Contact Us", style }: { title?: string, style?: React.CSSProperties }) {
   const {
     register,
     handleSubmit,
@@ -178,7 +178,8 @@ export default function Form({ title = "Contact Us" }: { title?: string }) {
   };
 
   return (
-    <section id="contact" className="section-padding relative overflow-hidden bg-white">
+    <section id="contact" className="section-padding relative overflow-hidden bg-white"
+      style={style}>
       <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-10 mix-blend-overlay"></div>
       <div className="relative z-10 max-w-2xl mx-auto">
         <motion.div

@@ -190,7 +190,7 @@ export default function Career() {
           priority
         />
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-          <h1 className="text-3xl sm:text-5xl font-bold text-white drop-shadow-lg">
+          <h1 className="text-3xl text-center sm:text-5xl font-bold text-white drop-shadow-lg">
             Careers at EUTRIV Health Care
           </h1>
         </div>

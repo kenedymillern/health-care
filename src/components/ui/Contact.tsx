@@ -16,7 +16,7 @@ export default function Contact() {
                     priority
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <h1 className="text-3xl sm:text-5xl font-bold text-white drop-shadow-lg">
+                    <h1 className="text-3xl text-center sm:text-5xl font-bold text-white drop-shadow-lg">
                         Fill the Form Below to Contact Us
                     </h1>
                 </div>
@@ -30,7 +30,7 @@ export default function Contact() {
                     sending us a message through the form below, and we’ll get back to you promptly.
                 </p>
             </section>
-            <Form title="Set An Appointment" />
+            <Form title="Set An Appointment" style={{ marginTop: "-60px" }} />
         </div>
     )
 }
