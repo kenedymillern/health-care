@@ -13,19 +13,6 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import sanitizeHtml from "sanitize-html"; // Import sanitize-html
 
-// Extend Window interface to include grecaptcha and optional callbacks
-declare global {
-  interface Window {
-    grecaptcha: {
-      render: (container: string | HTMLElement, parameters: { [key: string]: string | Function }) => void;
-      reset: () => void;
-      execute: () => void;
-    };
-    onRecaptchaSuccess?: (token: string) => void;
-    onRecaptchaExpired?: () => void;
-  }
-}
-
 // Sanitization configuration
 const sanitizeOptions = {
   allowedTags: [], // Remove all HTML tags

@@ -13,18 +13,6 @@ import toast from "react-hot-toast";
 import { CareerData } from "@/types";
 import sanitizeHtml from "sanitize-html";
 
-// Extend Window interface to include grecaptcha and optional callbacks
-declare global {
-  interface Window {
-    grecaptcha: {
-      render: (container: string | HTMLElement, parameters: { [key: string]: string | Function }) => void;
-      reset: () => void;
-      execute: () => void;
-    };
-    onRecaptchaSuccess?: (token: string) => void;
-    onRecaptchaExpired?: () => void;
-  }
-}
 
 // Zod Schema with updated regex validation
 const careerSchema = z.object({

@@ -1,7 +1,6 @@
 "use client"
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
-import axios from 'axios'
 import { storage } from '@/lib/utils';
 
 interface AppState {
