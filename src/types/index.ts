@@ -3,7 +3,10 @@ import { ObjectId } from 'mongodb';
 export interface Service {
   _id?: ObjectId;
   title: string;
-  description: string;
+  slug: string;
+  shortDescription: string;
+  fullDescription: string;
+  image: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

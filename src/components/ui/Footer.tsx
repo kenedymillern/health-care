@@ -62,20 +62,20 @@ export default function Footer() {
             <div className="flex items-center mb-6">
               <div className="relative mr-3">
                 <Image
-                  src="/images/logo3.png"
-                  alt="Pleasant Home Care Logo"
-                  width={120}
-                  height={84}
-                  className="object-contain"
+                  src="/images/eutriv-logo.png"
+                  alt="Rich Healthcare Services Logo"
+                  width={200} // Increased logo size
+                  height={100}
+                  className="object-contain max-w-[150px] sm:max-w-[180px] md:max-w-[200px]"
                   priority
                 />
               </div>
               <div>
                 <h3 className="text-2xl font-playfair font-bold">
-                  EUTRIV Health Care
+                  EUTRIV Health
                 </h3>
                 <p className="text-sm text-gray-300 font-inter">
-                  Compassionate Care Services
+                  Care With Virtue
                 </p>
               </div>
             </div>

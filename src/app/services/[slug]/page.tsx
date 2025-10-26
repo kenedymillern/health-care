@@ -1,78 +1,61 @@
-"use client";
+'use client';
 
-import Reachout from "@/components/ui/Reachout";
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import { use } from "react";
+import Reachout from '@/components/ui/Reachout';
+import Image from 'next/image';
+import { notFound } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
+import { Service } from '@/types';
+import { use } from 'react';
 
-// Define services array (ideally, this would come from a shared data source or API)
-const services = [
-  {
-    title: "Alzheimer's and Dementia",
-    slug: "alzheimers-dementia",
-    fullDescription:
-      "Our Alzheimer's and Dementia care services are tailored to meet the unique needs of individuals with memory-related conditions. Our compassionate caregivers provide structured routines, cognitive stimulation, and emotional support to enhance safety and well-being, while fostering a sense of dignity and comfort in familiar surroundings.",
-    image: "/images/alzheimers-care.jpg",
-  },
-  {
-    title: "Companion Care",
-    slug: "companion-care",
-    fullDescription:
-      "Our Companion Care services focus on building meaningful connections to improve quality of life. Caregivers assist with daily activities, engage in conversations, and encourage social interaction, helping clients stay active and connected while maintaining their independence at home.",
-    image: "/images/companion-care.jpg",
-  },
-  {
-    title: "Live-In and 24-Hour Care",
-    slug: "live-in-24-hour-care",
-    fullDescription:
-      "Our Live-In and 24-Hour Care services provide continuous support for individuals requiring constant supervision. Dedicated caregivers ensure safety, comfort, and assistance with daily tasks, offering peace of mind for families and personalized care for clients around the clock.",
-    image: "/images/live-in-care.jpg",
-  },
-  {
-    title: "Personal Care",
-    slug: "personal-care",
-    fullDescription:
-      "Personal Care services at EUTRIV Health Care are designed to support independence while assisting with daily activities such as bathing, dressing, grooming, and mobility. Our caregivers provide respectful, compassionate care to ensure comfort and maintain dignity for every client.",
-    image: "/images/personal-care.jpg",
-  },
-  {
-    title: "Home Care",
-    slug: "home-care",
-    fullDescription:
-      "Our Home Care services offer comprehensive support, including meal preparation, light housekeeping, medication reminders, and transportation assistance. Tailored to each client’s needs, we help individuals maintain their independence and live comfortably in their own homes.",
-    image: "/images/home-care.jpg",
-  },
-  {
-    title: "Respite Care",
-    slug: "respite-care",
-    fullDescription:
-      "Respite Care offers family caregivers a well-deserved break while ensuring their loved ones receive professional, compassionate care. Our caregivers provide temporary support, maintaining safety and well-being, so families can recharge with confidence.",
-    image: "/images/respite-care.jpg",
-  },
-  {
-    title: "Skilled Nursing",
-    slug: "skilled-nursing",
-    fullDescription:
-      "Our Skilled Nursing services deliver expert medical care at home, provided by licensed nurses. From wound care and medication management to health monitoring, we address complex health needs with professionalism, ensuring comfort and recovery in a familiar environment.",
-    image: "/images/skilled-nursing.jpg",
-  },
-];
+const fetchServiceBySlug = async (slug: string): Promise<Service> => {
+  const response = await fetch(`/api/services/${slug}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch service');
+  }
+  return response.json();
+};
 
 export default function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
-  // Unwrap the params Promise using React.use()
   const { slug } = use(params);
 
-  // Find the service based on the slug
-  const service = services.find((s) => s.slug === slug);
+  const { data: service, isLoading, error } = useQuery<Service>({
+    queryKey: ['service', slug],
+    queryFn: () => fetchServiceBySlug(slug),
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
 
-  // If no service is found, return 404
-  if (!service) {
+  if (isLoading) {
+    return (
+      <div className="w-full bg-white">
+        {/* Loading Hero Section */}
+        <section className="relative h-[100vh] w-full animate-pulse">
+          <div className="absolute inset-0 bg-gray-300" /> {/* Placeholder for image */}
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+            <div className="h-12 w-64 bg-gray-400 rounded sm:h-16 sm:w-96" /> {/* Placeholder for title */}
+          </div>
+        </section>
+
+        {/* Loading Details Section */}
+        <section className="py-12 px-6 md:px-16 max-w-4xl mx-auto text-center animate-pulse">
+          <div className="h-8 w-48 bg-gray-300 rounded mx-auto mb-4" /> {/* Placeholder for title */}
+          <div className="space-y-2">
+            <div className="h-4 w-full bg-gray-300 rounded" /> {/* Placeholder for description lines */}
+            <div className="h-4 w-3/4 bg-gray-300 rounded mx-auto" />
+            <div className="h-4 w-1/2 bg-gray-300 rounded mx-auto" />
+          </div>
+        </section>
+
+        <Reachout />
+      </div>
+    );
+  }
+
+  if (error || !service) {
     notFound();
   }
 
   return (
     <div className="w-full bg-white">
-      {/* Hero Section with Service Image as Background */}
       <section className="relative h-[100vh] w-full">
         <Image
           src={service.image}
@@ -87,8 +70,6 @@ export default function ServicePage({ params }: { params: Promise<{ slug: string
           </h1>
         </div>
       </section>
-
-      {/* Service Details Section */}
       <section className="py-12 px-6 md:px-16 max-w-4xl mx-auto text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
           {service.title}
