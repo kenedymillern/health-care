@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Service } from '@/types';
-import { ObjectId } from 'mongodb';
 
-export async function GET(req: NextRequest, { params }: { params: { slug: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   try {
+    const { slug } = await params; // Unwrap the Promise to get { slug: string }
     const db = await connectToDatabase();
-    const service = await db.collection<Service>('services').findOne({ slug: params.slug });
+    const service = await db.collection<Service>('services').findOne({ slug });
     if (!service) {
       return NextResponse.json({ error: 'Service not found' }, { status: 404 });
     }
