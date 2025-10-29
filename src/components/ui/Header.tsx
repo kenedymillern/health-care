@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 import {
   FaBars,
   FaTimes,
@@ -15,7 +16,8 @@ import Image from "next/image";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [lang, setLang] = useState("en");
-
+  const pathname = usePathname() || "/";
+  const text = pathname === "/" ? "LLC" : "Care";
   const navItems = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
@@ -28,20 +30,20 @@ export default function Header() {
   const contactInfo = [
     {
       icon: FaPhone,
-      label: "+1 (281) 725-7475",
-      href: "tel:+12817257475",
+      label: "+1 (281) 455-2017",
+      href: "tel:+12814552017",
       key: "phone",
     },
     {
       icon: FaEnvelope,
-      label: "eutrivhealth@gmail.com",
-      href: "mailto:eutrivhealth@gmail.com",
+      label: "Office@eutrivhealth.com",
+      href: "mailto:Office@eutrivhealth.com",
       key: "email",
     },
     {
       icon: FaMapMarkerAlt,
-      label: "123 Care St, Atlanta, GA 30301",
-      href: "https://maps.google.com/?q=123+Care+St,+Atlanta,+GA+30301",
+      label: "12808 W Airport Blvd, Suite 225C\nSugar Land, TX 77478",
+      href: "https://maps.google.com/?q=12808+W+Airport+Blvd,+Suite+225C,+Sugar+Land,+TX+77478",
       key: "address",
     },
   ];
@@ -253,7 +255,7 @@ export default function Header() {
             />
           </motion.div>
           <span className="text-base sm:text-lg md:text-xl font-playfair font-bold text-white drop-shadow-md">
-            EUTRIV Health
+            {`EUTRIV Health ${text}`}
           </span>
         </Link>
 

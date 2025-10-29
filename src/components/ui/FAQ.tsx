@@ -3,36 +3,24 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaPlus, FaMinus } from 'react-icons/fa';
+import { FAQ as FAQTypes } from '@/types';
+import { useQuery } from '@tanstack/react-query';
 
-const faqs = [
-  {
-    question: 'What types of care services do you offer?',
-    answer: 'We provide a range of services including personal care, companionship care, Alzheimer’s and dementia care, rehabilitation services, and 24/7 care availability, all tailored to your needs.',
-  },
-  {
-    question: 'How do you ensure the quality of your caregivers?',
-    answer: 'Our caregivers are rigorously vetted, trained, and certified professionals with a passion for compassionate care, ensuring the highest standards of service.',
-  },
-  {
-    question: 'Can services be customized for specific needs?',
-    answer: 'Yes, we create personalized care plans based on individual needs, preferences, and medical requirements to ensure the best possible care experience.',
-  },
-  {
-    question: 'What is the process to start care services?',
-    answer: 'Simply contact us to schedule a consultation. We’ll assess your needs, create a care plan, and match you with a suitable caregiver to begin services promptly.',
-  },
-  {
-    question: 'Do you provide 24/7 support?',
-    answer: 'Absolutely, our 24/7 care availability ensures support is always available, day or night, for peace of mind and continuous care.',
-  },
-  {
-    question: 'How do you handle emergency situations?',
-    answer: 'Our team is trained to respond swiftly to emergencies, with protocols in place to coordinate with medical professionals and family members as needed.',
-  },
-];
+const fetchFaqs = async (): Promise<FAQTypes[]> => {
+  const response = await fetch('/api/faq');
+  if (!response.ok) {
+    throw new Error('Failed to fetch faqs');
+  }
+  return response.json();
+};
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const { data: faqs, isLoading, error } = useQuery<FAQTypes[]>({
+    queryKey: ['faqs'],
+    queryFn: fetchFaqs,
+    staleTime: 1000 * 60 * 60, // 1 hour
+  });
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -49,7 +37,7 @@ export default function FAQ() {
 
   const answerVariants = {
     hidden: { height: 0, opacity: 0 },
-    visible: (i: number) => ({ height: 'auto', opacity: 1, transition: { duration: 0.5, delay: i * 0.2  } }),
+    visible: (i: number) => ({ height: 'auto', opacity: 1, transition: { duration: 0.5, delay: i * 0.2 } }),
   };
 
   return (
@@ -70,53 +58,67 @@ export default function FAQ() {
         </p>
       </motion.div>
       <div className="mt-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {faqs.map((faq, index) => (
-          <motion.div
-            key={index}
-            custom={index}
-            variants={faqVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="glass-effect rounded-xl mb-4 bg-lilac-100/50 hover:bg-lilac-100/70 transition-all duration-300"
-            whileHover={{ scale: 1.02, boxShadow: '0 10px 30px rgba(139, 92, 246, 0.3)' }}
-          >
-            <button
-              className="w-full flex justify-between items-center p-4 sm:p-6 text-left focus:outline-none"
-              onClick={() => toggleFAQ(index)}
-              aria-expanded={openIndex === index}
-              aria-controls={`faq-answer-${index}`}
-            >
-              <h3 className="text-lg sm:text-xl font-playfair font-semibold text-white drop-shadow-md">
-                {faq.question}
-              </h3>
-              <motion.div
-                animate={{ rotate: openIndex === index ? 180 : 0 }}
-                transition={{ duration: 0.3 }}
+        {isLoading ? (
+          <div className="flex flex-col space-y-3 animate-pulse">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 rounded-lg shadow-md overflow-hidden flex flex-col"
               >
-                {openIndex === index ? (
-                  <FaMinus className="text-black" size={20} />
-                ) : (
-                  <FaPlus className="text-black" size={20} />
-                )}
-              </motion.div>
-            </button>
-            <AnimatePresence>
-              {openIndex === index && (
+                <div className="h-10 w-full bg-gray-300 mb-2" />
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <p className="text-center text-red-500">Error loading FAQs</p>
+        ) : (
+          faqs?.map((faq, index) => (
+            <motion.div
+              key={index}
+              custom={index}
+              variants={faqVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="glass-effect rounded-xl mb-4 bg-lilac-100/50 hover:bg-lilac-100/70 transition-all duration-300"
+              whileHover={{ scale: 1.02, boxShadow: '0 10px 30px rgba(139, 92, 246, 0.3)' }}
+            >
+              <button
+                className="w-full flex justify-between items-center p-4 sm:p-6 text-left focus:outline-none"
+                onClick={() => toggleFAQ(index)}
+                aria-expanded={openIndex === index}
+                aria-controls={`faq-answer-${index}`}
+              >
+                <h3 className="text-lg sm:text-xl font-playfair font-semibold text-white drop-shadow-md">
+                  {faq.question}
+                </h3>
                 <motion.div
-                  id={`faq-answer-${index}`}
-                  variants={answerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  className="px-4 sm:px-6 pb-4 sm:pb-6 text-black font-inter text-base sm:text-lg leading-relaxed overflow-hidden"
+                  animate={{ rotate: openIndex === index ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
                 >
-                  {faq.answer}
+                  {openIndex === index ? (
+                    <FaMinus className="text-black" size={20} />
+                  ) : (
+                    <FaPlus className="text-black" size={20} />
+                  )}
                 </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        ))}
+              </button>
+              <AnimatePresence>
+                {openIndex === index && (
+                  <motion.div
+                    id={`faq-answer-${index}`}
+                    variants={answerVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit="hidden"
+                    className="px-4 sm:px-6 pb-4 sm:pb-6 text-black font-inter text-base sm:text-lg leading-relaxed overflow-hidden"
+                  >
+                    {faq.answer}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          )))}
       </div>
     </section>
   );

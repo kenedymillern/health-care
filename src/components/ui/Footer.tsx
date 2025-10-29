@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { usePathname } from "next/navigation";
 import {
   PhoneIcon,
   EnvelopeIcon,
@@ -18,6 +19,8 @@ type NewsletterInput = {
 
 export default function Footer() {
   const { register, handleSubmit, formState: { errors } } = useForm<NewsletterInput>();
+  const pathname = usePathname() || "/";
+  const text = pathname === "/" ? "LLC" : "Care";
 
   const onSubmit: SubmitHandler<NewsletterInput> = (data) => {
     console.log('Newsletter subscription:', data);
@@ -72,7 +75,7 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="text-2xl font-playfair font-bold">
-                  EUTRIV Health
+                  {`EUTRIV Health ${text}`}
                 </h3>
                 <p className="text-sm text-gray-300 font-inter">
                   Care With Virtue
@@ -159,7 +162,7 @@ export default function Footer() {
                     href="tel:+12817257475"
                     className="text-gray-300 hover:text-white transition-colors font-inter"
                   >
-                    +1 (281) 725-7475
+                    +1 (281) 455-2017
                   </a>
                   <p className="text-xs text-gray-400 font-inter">
                     Mon - Sat: 8AM - 6PM
@@ -170,10 +173,10 @@ export default function Footer() {
                 <EnvelopeIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
                   <a
-                    href="mailto:eutrivhealth@gmail.com"
+                    href="mailto:Office@eutrivhealth.com"
                     className="text-gray-300 hover:text-white transition-colors font-inter"
                   >
-                    eutrivhealth@gmail.com
+                    Office@eutrivhealth.com
                   </a>
                   <p className="text-xs text-gray-400 font-inter">
                     We reply within 24 hours
@@ -183,8 +186,8 @@ export default function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPinIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-300 font-inter">123 Care St</p>
-                  <p className="text-gray-300 font-inter">Atlanta, GA 30301</p>
+                  <p className="text-gray-300 font-inter">12808 W Airport Blvd, Suite 225C</p>
+                  <p className="text-gray-300 font-inter">Sugar Land, TX 77478</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -248,7 +251,7 @@ export default function Footer() {
         <div className="border-t border-white/20 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-300 text-sm mb-4 md:mb-0 font-inter">
-              © {currentYear} EUTRIV Health Care. All rights reserved.
+              © {currentYear} EUTRIV Health Care LLC. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center space-x-6 text-sm">
               <Link

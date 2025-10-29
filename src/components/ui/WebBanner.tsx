@@ -90,8 +90,9 @@ export default function WebBanner({ title, subtitle, image }: WebBannerProps) {
           viewport={{ once: true }}
         >
           <Link
-            href="/contact"
+            href="/about#why-choose-us"
             className="mt-6 inline-block bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-6 sm:px-8 py-3 sm:py-4 rounded-full font-inter text-base sm:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:from-[#FFD700] hover:to-[#D4AF37]"
+            prefetch={false}
           >
             Learn More
           </Link>

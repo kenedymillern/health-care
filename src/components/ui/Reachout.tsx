@@ -12,7 +12,7 @@ export default function Reachout() {
                     Reach Out to Us Now!
                 </h2>
                 <p className="text-gray-600 leading-relaxed mb-6">
-                    Ready to take the next step in your wellness journey? Make an informed decision about your health by connecting with our dedicated team at EUTRIV Health Care.{" "}
+                    Ready to take the next step in your wellness journey? Make an informed decision about your health by connecting with our dedicated team at EUTRIV Health Care LLC.{" "}
                     <Link
                         href="/contact"
                         className="text-blue-600 hover:text-blue-800 underline font-semibold"
@@ -40,13 +40,14 @@ export default function Reachout() {
                     </div>
                     <div className="w-full md:w-1/2 text-center md:text-left">
                         <p className="text-gray-600 leading-relaxed mb-4">
-                            Visit us at EUTRIV Health Care to experience our client-focused care in person. Our team is ready to assist you with your wellness needs.
+                            Visit us at EUTRIV Health Care LLC to experience our client-focused care in person. Our team is ready to assist you with your wellness needs.
                         </p>
                         <p className="text-gray-800 font-semibold mb-2">
-                            <span className="font-bold">Location:</span> 123 Wellness Avenue, Health City, HC 12345
+                            <span className="font-bold">Location:</span> 12808 W Airport Blvd, Suite 225C
+                            Sugar Land, TX 77478
                         </p>
                         <p className="text-gray-800 font-semibold mb-2">
-                            <span className="font-bold">Phone:</span> (555) 123-4567
+                            <span className="font-bold">Phone:</span> (281) 455-2017
                         </p>
                         <p className="text-gray-800 font-semibold mb-4">
                             <span className="font-bold">Working Hours:</span> Monday–Friday: 8:00 AM–6:00 PM, Saturday: 9:00 AM–2:00 PM, Sunday: Closed
