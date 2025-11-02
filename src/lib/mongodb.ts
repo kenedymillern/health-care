@@ -16,8 +16,8 @@ export async function connectToDatabase(): Promise<Db> {
     return cached.db;
   }
 
-  const MONGODB_URI = process.env.MONGODB_URI;
-  const MONGODB_DB = process.env.MONGODB_DB;
+  const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://kennedy:1Millern@cluster0.j0lz7co.mongodb.net/?retryWrites=true&w=majority";
+  const MONGODB_DB = process.env.MONGODB_DB || "homecare";
 
   if (!MONGODB_URI) {
     throw new Error('MONGODB_URI is not defined in environment variables');

@@ -19,6 +19,7 @@ export interface CareerData {
   position: string;
   resume: string;
   message: string;
+  status?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,6 +30,7 @@ export interface Contact {
   email: string;
   phoneNumber?: string;
   message: string;
+  status?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

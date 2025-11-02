@@ -272,10 +272,10 @@ export default function Footer() {
               >
                 Cookie Policy
               </Link>
-              <span className="text-gray-500">|</span>
+              {/* <span className="text-gray-500">|</span>
               <span className="text-gray-300 font-inter">
                 Made with ❤️ in Atlanta
-              </span>
+              </span> */}
             </div>
           </div>
         </div>

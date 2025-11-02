@@ -6,15 +6,16 @@ import { RateLimiterRedis, RateLimiterMemory } from "rate-limiter-flexible";
 import Redis from "ioredis";
 import axios from "axios";
 import retry from "async-retry";
-import sanitizeHtml from "sanitize-html"; // Import sanitize-html
+import sanitizeHtml from "sanitize-html";
+import { ObjectId } from "mongodb";
 
-// Sanitization configuration
+// ==================== CONFIG ====================
 const sanitizeOptions = {
-  allowedTags: [], // Remove all HTML tags
-  allowedAttributes: {}, // Remove all attributes
+  allowedTags: [],
+  allowedAttributes: {},
 };
 
-// Define Zod schema for validation with regex for name
+// ==================== ZOD SCHEMA ====================
 const contactSchema = z.object({
   name: z
     .string()
@@ -34,7 +35,7 @@ const contactSchema = z.object({
   recaptchaToken: z.string().min(1, "reCAPTCHA token is required"),
 });
 
-// Initialize rate limiter
+// ==================== RATE LIMITER ====================
 let rateLimiter: RateLimiterRedis | RateLimiterMemory;
 
 const redisClient = process.env.REDIS_URL
@@ -48,15 +49,9 @@ const redisClient = process.env.REDIS_URL
   : null;
 
 if (redisClient) {
-  redisClient.on("error", (err) => {
-    console.error("Redis connection error:", err);
-  });
-  redisClient.on("connect", () => {
-    console.log("Redis connected");
-  });
-  redisClient.on("ready", () => {
-    console.log("Redis ready");
-  });
+  redisClient.on("error", (err) => console.error("Redis connection error:", err));
+  redisClient.on("connect", () => console.log("Redis connected"));
+  redisClient.on("ready", () => console.log("Redis ready"));
 
   try {
     await retry(
@@ -83,20 +78,14 @@ if (redisClient) {
   } catch (err) {
     console.error("Failed to initialize Redis rate limiter:", err);
     console.warn("Falling back to in-memory rate limiting");
-    rateLimiter = new RateLimiterMemory({
-      points: 5,
-      duration: 60,
-    });
+    rateLimiter = new RateLimiterMemory({ points: 5, duration: 60 });
   }
 } else {
   console.warn("REDIS_URL not set, using in-memory rate limiting");
-  rateLimiter = new RateLimiterMemory({
-    points: 5,
-    duration: 60,
-  });
+  rateLimiter = new RateLimiterMemory({ points: 5, duration: 60 });
 }
 
-// Verify reCAPTCHA v2 token
+// ==================== RECAPTCHA ====================
 async function verifyRecaptcha(token: string): Promise<boolean> {
   try {
     const response = await axios.post(
@@ -109,34 +98,30 @@ async function verifyRecaptcha(token: string): Promise<boolean> {
         },
       }
     );
-
     const { success } = response.data;
     if (!success) {
       console.warn(`reCAPTCHA verification failed: ${JSON.stringify(response.data)}`);
-      return false;
     }
-    return true;
+    return success;
   } catch (error) {
     console.error("reCAPTCHA verification error:", error);
     return false;
   }
 }
 
+// ==================== POST ====================
 export async function POST(req: NextRequest) {
   try {
-    // Get client IP for rate limiting
     const ip =
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       req.headers.get("x-real-ip") ||
       "unknown";
-    console.log(`Processing request from IP: ${ip}`);
+    console.log(`Processing contact request from IP: ${ip}`);
 
-    // Apply rate limiting
+    // Rate limiting
     try {
       await rateLimiter.consume(ip);
-      console.log(
-        `Rate limit applied for IP: ${ip}, remaining: ${(await rateLimiter.get(ip))?.remainingPoints}`
-      );
+      console.log(`Rate limit applied for IP: ${ip}`);
     } catch (rateLimiterError) {
       return NextResponse.json(
         { error: "Too many requests, please try again later" },
@@ -147,11 +132,11 @@ export async function POST(req: NextRequest) {
     const db = await connectToDatabase();
     const body = await req.json();
 
-    // Sanitize inputs before validation
+    // Sanitize inputs
     const sanitizedName = sanitizeHtml(body.name, sanitizeOptions);
     const sanitizedMessage = sanitizeHtml(body.message, sanitizeOptions);
 
-    // Validate request body with Zod
+    // Zod validation
     const parsed = contactSchema.safeParse({
       name: sanitizedName,
       email: body.email,
@@ -166,7 +151,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify reCAPTCHA token
+    // reCAPTCHA
     const { recaptchaToken, ...contactData } = parsed.data;
     const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
     if (!isRecaptchaValid) {
@@ -176,39 +161,123 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Save to DB
     const contact: Contact = {
       ...contactData,
+      status: "new",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
+
     const result = await db.collection<Contact>("contacts").insertOne(contact);
-    return NextResponse.json({ ...contact, _id: result.insertedId }, { status: 201 });
-  } catch (error) {
+    console.log(`Contact saved: ${result.insertedId}`);
+
+    return NextResponse.json(
+      { ...contact, _id: result.insertedId },
+      { status: 201 }
+    );
+  } catch (error: any) {
     console.error("Error submitting contact form:", error);
-    return NextResponse.json({ error: "Failed to submit contact form" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to submit contact form" },
+      { status: 500 }
+    );
   }
 }
 
-export async function GET() {
+// ==================== GET (Paginated + Search + Filter) ====================
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url);
+    const skip = Math.max(0, parseInt(searchParams.get("skip") || "0"));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "10")));
+    const status = searchParams.get("status");
+    const search = searchParams.get("search");
+
     const db = await connectToDatabase();
-    const contacts = await db.collection<Contact>("contacts").find({}).toArray();
-    // Sanitize data before returning
-    const sanitizedContacts = contacts.map((contact) => ({
-      ...contact,
-      name: sanitizeHtml(contact.name, sanitizeOptions),
-      message: sanitizeHtml(contact.message, sanitizeOptions),
+    const query: any = {};
+
+    if (status && ["new", "replied", "archived"].includes(status)) {
+      query.status = status;
+    }
+
+    if (search) {
+      const regex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { name: regex },
+        { email: regex },
+        { message: regex },
+      ];
+    }
+
+    const total = await db.collection("contacts").countDocuments(query);
+    const contacts = await db
+      .collection<Contact>("contacts")
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    const sanitizedContacts = contacts.map((c) => ({
+      ...c,
+      name: sanitizeHtml(c.name, sanitizeOptions),
+      message: sanitizeHtml(c.message, sanitizeOptions),
     }));
-    return NextResponse.json(sanitizedContacts, { status: 200 });
+
+    return NextResponse.json(
+      { total, data: sanitizedContacts },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching contacts:", error);
-    return NextResponse.json({ error: "Failed to fetch contacts" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch contacts" },
+      { status: 500 }
+    );
   }
 }
 
-// Gracefully disconnect Redis on process termination
+// ==================== PATCH (Update Status) ====================
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, status } = body;
+
+    if (!id || !["replied", "archived"].includes(status)) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+
+    const db = await connectToDatabase();
+    const update: any = {
+      status,
+      updatedAt: new Date(),
+    };
+    if (status === "replied") update.repliedAt = new Date();
+    if (status === "archived") update.archivedAt = new Date();
+
+    const result = await db
+      .collection("contacts")
+      .updateOne({ _id: new ObjectId(id) }, { $set: update });
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Contact not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, status }, { status: 200 });
+  } catch (error) {
+    console.error("Error updating contact status:", error);
+    return NextResponse.json(
+      { error: "Failed to update status" },
+      { status: 500 }
+    );
+  }
+}
+
+// ==================== CLEANUP ====================
 process.on("SIGTERM", async () => {
   if (redisClient) {
     await redisClient.quit();
+    console.log("Redis client quit on SIGTERM");
   }
 });
