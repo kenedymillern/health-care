@@ -148,7 +148,7 @@ export default function ContactsAdmin() {
         {contacts.map((c) => (
           <div
             key={c._id}
-            className="p-4 bg-white dark:bg-gray-800 rounded border flex flex-col gap-2"
+            className="p-4 bg-white rounded border flex flex-col gap-2"
           >
             <div className="flex justify-between items-start">
               <div>

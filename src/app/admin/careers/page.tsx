@@ -119,7 +119,7 @@ export default function CareersAdmin() {
           {careers.map((c) => (
             <div
               key={c._id}
-              className="p-4 border rounded-lg bg-white dark:bg-gray-800 shadow-sm flex flex-col gap-3"
+              className="p-4 border rounded-lg bg-white shadow-sm flex flex-col gap-3"
             >
               <div className="flex justify-between items-start">
                 <div>

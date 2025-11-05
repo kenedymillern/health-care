@@ -31,7 +31,7 @@ export default function RegisterAdminForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 max-w-sm bg-white dark:bg-gray-800 p-4 rounded shadow">
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-sm bg-white p-4 rounded shadow">
       <h3 className="text-lg font-semibold">Create New Admin</h3>
       <label className="block">
         <span>Email</span>
