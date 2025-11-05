@@ -44,19 +44,19 @@ export default async function AdminDashboard() {
     <div>
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 border rounded bg-white dark:bg-gray-800">
+        <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Services</p>
           <p className="text-2xl font-semibold">{servicesCount}</p>
         </div>
-        <div className="p-4 border rounded bg-white dark:bg-gray-800">
+        <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Reviews</p>
           <p className="text-2xl font-semibold">{reviewsCount}</p>
         </div>
-        <div className="p-4 border rounded bg-white dark:bg-gray-800">
+        <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Career Applications</p>
           <p className="text-2xl font-semibold">{careersCount}</p>
         </div>
-        <div className="p-4 border rounded bg-white dark:bg-gray-800">
+        <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Contact Messages</p>
           <p className="text-2xl font-semibold">{contactsCount}</p>
         </div>

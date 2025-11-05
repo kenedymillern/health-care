@@ -98,7 +98,7 @@ export default function ServicesAdmin() {
 
       <div className="grid md:grid-cols-2 gap-4">
         {/* Form section */}
-        <div className="p-4 bg-white dark:bg-gray-800 rounded border">
+        <div className="p-4 bg-white rounded border">
           <h2 className="font-semibold mb-2">
             {editing ? 'Edit Service' : 'Create Service'}
           </h2>
@@ -156,7 +156,7 @@ export default function ServicesAdmin() {
         </div>
 
         {/* Existing services section */}
-        <div className="p-4 bg-white dark:bg-gray-800 rounded border overflow-auto">
+        <div className="p-4 bg-white rounded border overflow-auto">
           <h2 className="font-semibold mb-2">Existing Services</h2>
 
           {isLoading ? (
@@ -222,8 +222,8 @@ export default function ServicesAdmin() {
 
       {/* Delete confirmation modal */}
       {deleteTarget && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
             <h3 className="text-lg font-semibold mb-3">Confirm Delete</h3>
             <p className="text-sm mb-4">
               Are you sure you want to delete “{deleteTarget.title}”?
