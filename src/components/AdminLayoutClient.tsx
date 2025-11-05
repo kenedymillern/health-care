@@ -9,7 +9,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+    <div className="min-h-screen flex bg-gray-50 relative overflow-hidden">
       {/* Sidebar (desktop only) */}
       <div className="hidden md:block">
         <AdminSidebar />
@@ -48,11 +48,11 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
         <div className="flex items-center justify-between mb-4 md:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+            className="p-2 rounded-md hover:bg-gray-100 transition"
           >
             <Menu className="h-6 w-6" />
           </button>
-          <h1 className="font-semibold text-lg text-gray-800 dark:text-gray-200">Admin Panel</h1>
+          <h1 className="font-semibold text-sm text-gray-800">Admin Panel</h1>
         </div>
 
         {children}
