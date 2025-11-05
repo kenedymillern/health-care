@@ -31,8 +31,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 -mt-20">
-      <form onSubmit={submit} className="w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded shadow">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 -mt-20">
+      <form onSubmit={submit} className="w-full max-w-sm bg-white p-6 rounded shadow">
         <h2 className="text-2xl font-bold mb-4">Admin Login</h2>
         <label className="block mb-2">
           <span className="text-sm">Email</span>

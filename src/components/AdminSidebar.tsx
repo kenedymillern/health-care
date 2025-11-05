@@ -46,12 +46,12 @@ export default function AdminSidebar({ onClose }: SidebarProps) {
   if (!loggedIn) return null;
 
   return (
-    <aside className="w-64 h-full p-4 bg-white dark:bg-gray-800 border-r flex flex-col">
+    <aside className="w-64 h-full p-4 bg-white border-r flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-gray-100">Admin</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">EUTRIV dashboard</p>
+          <h1 className="text-xl font-bold text-gray-800">Admin</h1>
+          <p className="text-sm text-gray-500">EUTRIV dashboard</p>
         </div>
         {/* Close button (mobile only) */}
         {onClose && (
