@@ -57,7 +57,7 @@ export default function AdminSidebar({ onClose }: SidebarProps) {
         {onClose && (
           <button
             onClick={onClose}
-            className="md:hidden p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+            className="md:hidden p-2 rounded hover:bg-gray-10"
           >
             <X className="h-5 w-5 text-gray-700 dark:text-gray-300" />
           </button>
@@ -78,7 +78,7 @@ export default function AdminSidebar({ onClose }: SidebarProps) {
             key={item.href}
             href={item.href}
             onClick={onClose}
-            className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition"
+            className="p-2 rounded hover:bg-gray-100 transition"
           >
             {item.label}
           </Link>

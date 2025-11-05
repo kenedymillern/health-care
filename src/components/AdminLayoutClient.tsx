@@ -30,7 +30,7 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
             />
             {/* Sidebar slide-in */}
             <motion.div
-              className="fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-gray-800 md:hidden border-r shadow-lg"
+              className="fixed top-0 left-0 z-50 h-full w-64 bg-white md:hidden border-r shadow-lg"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
