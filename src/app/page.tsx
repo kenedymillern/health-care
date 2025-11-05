@@ -11,12 +11,14 @@ import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { Service } from '@/types';
 
+
 const fetchServices = async (): Promise<Service[]> => {
   const response = await fetch('/api/services');
   if (!response.ok) {
     throw new Error('Failed to fetch services');
   }
-  return response.json();
+  const data = await response.json();
+  return data.services;
 };
 
 export default function Home() {

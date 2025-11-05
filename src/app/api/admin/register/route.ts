@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   try {
     // verify the logged-in admin via cookie
     const token = req.cookies.get(COOKIE_NAME)?.value;
-    const payload = token ? verifyAdminToken(token) : null;
+    const payload = token ? await verifyAdminToken(token) : null;
     if (!payload) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }

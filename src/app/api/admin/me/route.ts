@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const token = req.cookies.get(COOKIE_NAME)?.value;
   if (!token) return NextResponse.json({ loggedIn: false });
 
-  const payload = verifyAdminToken(token);
+  const payload = await verifyAdminToken(token);
   if (!payload) return NextResponse.json({ loggedIn: false });
 
   return NextResponse.json({ loggedIn: true, email: payload.email });

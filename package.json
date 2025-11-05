@@ -6,8 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint",
-    "create-admin": "ts-node --compiler-options \"{\\\"module\\\":\\\"commonjs\\\"}\" src/lib/scripts/createAdmin.ts"
+    "lint": "eslint"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -31,6 +30,7 @@
     "helmet": "^8.1.0",
     "ioredis": "^5.8.2",
     "jsonwebtoken": "^9.0.2",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.546.0",
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.2",
@@ -56,6 +56,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/async-retry": "^1.4.9",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import debounce from "lodash.debounce";
 
 type Contact = {
   _id: string;
@@ -16,11 +17,28 @@ export default function ContactsAdmin() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [search, setSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
 
+  // --- Debounced Search ---
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setSearchQuery(value);
+      setSkip(0);
+    }, 500),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    debouncedSearch(e.target.value);
+  };
+
+  // --- Fetch Contacts ---
   const fetchContacts = async () => {
     try {
       setLoading(true);
@@ -29,14 +47,14 @@ export default function ContactsAdmin() {
         limit: limit.toString(),
       });
       if (statusFilter) params.append("status", statusFilter);
-      if (search) params.append("search", search);
+      if (searchQuery) params.append("search", searchQuery);
 
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/contact?${params}`,
         { cache: "no-store" }
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to fetch");
+      if (!res.ok) throw new Error(data.error || "Failed to fetch contacts");
       setContacts(data.data);
       setTotal(data.total);
     } catch (err) {
@@ -48,10 +66,15 @@ export default function ContactsAdmin() {
 
   useEffect(() => {
     fetchContacts();
-  }, [skip, statusFilter]);
+  }, [skip, statusFilter, searchQuery]);
 
-  const handleStatusUpdate = async (id: string, status: "replied" | "archived") => {
+  // --- Update Contact Status ---
+  const handleStatusUpdate = async (
+    id: string,
+    status: "replied" | "archived"
+  ) => {
     try {
+      setUpdatingId(id);
       const res = await fetch("/api/contact", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -60,13 +83,17 @@ export default function ContactsAdmin() {
       const data = await res.json();
       if (res.ok) {
         setContacts((prev) =>
-          prev.map((c) => (c._id === id ? { ...c, status: data.status } : c))
+          prev.map((c) =>
+            c._id === id ? { ...c, status: data.status || status } : c
+          )
         );
       } else {
         console.error(data.error || "Failed to update");
       }
     } catch (error) {
       console.error("Update error:", error);
+    } finally {
+      setUpdatingId(null);
     }
   };
 
@@ -76,13 +103,13 @@ export default function ContactsAdmin() {
     <div>
       <h1 className="text-xl font-bold mb-4">Contact Messages</h1>
 
-      {/* Filters */}
+      {/* Filters & Search */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <input
           type="text"
           placeholder="Search by name, email, or message..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={handleSearchChange}
           className="border rounded px-3 py-1 text-sm w-64"
         />
         <select
@@ -109,7 +136,7 @@ export default function ContactsAdmin() {
         </button>
       </div>
 
-      {/* Loading indicator */}
+      {/* Loading */}
       {loading && <div className="text-gray-500 text-sm">Loading...</div>}
 
       {/* List */}
@@ -117,6 +144,7 @@ export default function ContactsAdmin() {
         {!loading && contacts.length === 0 && (
           <div className="text-sm text-gray-500">No messages found.</div>
         )}
+
         {contacts.map((c) => (
           <div
             key={c._id}
@@ -130,6 +158,7 @@ export default function ContactsAdmin() {
                 </div>
                 <p className="mt-2 text-sm">{c.message}</p>
               </div>
+
               <div className="flex flex-col items-end gap-2 text-right">
                 <span
                   className={`text-xs font-medium px-2 py-1 rounded ${
@@ -148,21 +177,37 @@ export default function ContactsAdmin() {
               </div>
             </div>
 
-            {/* Action buttons */}
+            {/* Actions */}
             {c.status !== "archived" && (
               <div className="flex gap-2 justify-end mt-2">
                 {c.status === "new" && (
                   <button
                     onClick={() => handleStatusUpdate(c._id, "replied")}
-                    className="text-xs bg-green-600 text-white px-2 py-1 rounded"
+                    disabled={updatingId === c._id}
+                    className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${
+                      updatingId === c._id
+                        ? "bg-green-400 cursor-wait"
+                        : "bg-green-600 hover:bg-green-700"
+                    }`}
                   >
+                    {updatingId === c._id && (
+                      <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    )}
                     Mark as Replied
                   </button>
                 )}
                 <button
                   onClick={() => handleStatusUpdate(c._id, "archived")}
-                  className="text-xs bg-gray-600 text-white px-2 py-1 rounded"
+                  disabled={updatingId === c._id}
+                  className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${
+                    updatingId === c._id
+                      ? "bg-gray-400 cursor-wait"
+                      : "bg-gray-600 hover:bg-gray-700"
+                  }`}
                 >
+                  {updatingId === c._id && (
+                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  )}
                   Archive
                 </button>
               </div>
@@ -186,7 +231,7 @@ export default function ContactsAdmin() {
             Previous
           </button>
           <span className="text-gray-500">
-            Page {skip / limit + 1} of {totalPages}
+            Page {Math.floor(skip / limit) + 1} of {totalPages}
           </span>
           <button
             disabled={skip + limit >= total}

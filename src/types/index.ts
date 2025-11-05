@@ -9,7 +9,7 @@ export interface Service {
   image: string;
   createdAt?: Date;
   updatedAt?: Date;
-}
+}9
 
 export interface CareerData {
   _id?: ObjectId;

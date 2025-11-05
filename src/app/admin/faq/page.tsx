@@ -165,7 +165,7 @@ export default function FAQPage() {
                 <button
                   onClick={() => faq._id && remove.mutate(faq._id.toString())}
                   disabled={remove.isPending || !faq._id}
-                  className="text-red-500 hover:text-red-700 font-medium opacity-0 group-hover:opacity-100 transition"
+                  className="text-red-500 hover:text-red-700 font-medium opacity-0 group-hover:opacity-100 transition cursor-pointer"
                 >
                   {remove.isPending ? "Deleting..." : "Delete"}
                 </button>

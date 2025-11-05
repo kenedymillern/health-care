@@ -10,7 +10,11 @@ async function fetchCount(path: string) {
   const data = await res.json();
 
   // Determine count based on path
-  if (path === '/services' || path === '/reviews') {
+  if (path === '/services') {
+    return data.totalCount || 0;
+  }
+ 
+  if (path === '/reviews') {
     return Array.isArray(data) ? data.length : 0;
   }
 
@@ -25,7 +29,7 @@ async function fetchCount(path: string) {
 export default async function AdminDashboard() {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  const payload = token ? verifyAdminToken(token) : null;
+  const payload = token ? await verifyAdminToken(token) : null;
 
   if (!payload) redirect("/admin/login");
 
