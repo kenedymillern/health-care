@@ -35,7 +35,7 @@ export default function Hero() {
   const videoSrc = '/videos/door-open.mp4';
 
   return (
-    <section className="relative overflow-hidden h-[90vh] min-h-[615px] flex items-center justify-center">
+    <section className="relative overflow-hidden h-[70vh] min-h-[400px] sm:h-[80vh] sm:min-h-[480px] lg:h-[90vh] lg:min-h-[615px] flex items-center justify-center">
       {/* Single Door Video */}
       <motion.div
         className="absolute inset-0 z-10" // Video below content
@@ -55,7 +55,7 @@ export default function Hero() {
       </motion.div>
 
       {/* Content above video */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center -mt-30">
+      <div className="absolute inset-0 z-20 flex items-center justify-center -mt-10 md:-mt-30">
         <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)] pointer-events-none" /> {/* Background overlay */}
         <motion.div
           className="relative z-30 text-center px-6 max-w-[920px] mx-auto" // Content above video and overlay
@@ -63,11 +63,11 @@ export default function Hero() {
           initial="hidden"
           animate={isOpen ? 'visible' : 'hidden'}
         >
-          <h1 className="text-white font-extrabold leading-tight mx-auto text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-            Unlocking Health Solutions for Real Impact
+          <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
+            Caring With Purpose, Serving With Heart
           </h1>
-          <h2 className="mt-4 text-[#EA9123] font-semibold text-xl sm:text-2xl md:text-3xl lg:text-4xl">
-            Providing personalized care <br /> to support your loved ones at home.
+          <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
+            Providing compassionate, reliable <br /> care that makes a lasting difference in the lives of those we serve.
           </h2>
         </motion.div>
       </div>

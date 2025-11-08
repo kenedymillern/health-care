@@ -215,8 +215,8 @@ export default function Career() {
           <p>
             <strong>Contact Us!</strong>
           </p>
-          <p>📞 Phone Number: +1 (281) 725-7475</p>
-          <p>📧 Email Address: eutrivhealth@gmail.com</p>
+          <p>📞 Phone Number: +1 (281) 455-2017</p>
+          <p>📧 Email Address: office@eutrivhealth.com</p>
         </div>
       </section>
 

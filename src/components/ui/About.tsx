@@ -24,16 +24,16 @@ export default function About() {
             }
         }
     }, [pathname, searchParams]);
-    
+
     return (
         <div className="w-full bg-white">
             {/* Hero Section */}
             <section className="relative h-[100vh] w-full">
                 <Image
-                    src="/images/about.jpg"
+                    src="/images/about2.jpg"
                     alt="About EUTRIV Health Care"
                     fill
-                    className="object-cover"
+                    className="object-cover sm:object-contain"
                     priority
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
