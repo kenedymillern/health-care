@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import debounce from "lodash.debounce";
+import toast from "react-hot-toast";
 
 type Contact = {
   _id: string;
@@ -19,7 +20,7 @@ export default function ContactsAdmin() {
   const [skip, setSkip] = useState(0);
   const [limit] = useState(5);
   const [loading, setLoading] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<"new" | "replied" | "archived" | "">("");
   const [search, setSearch] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -81,17 +82,12 @@ export default function ContactsAdmin() {
         body: JSON.stringify({ id, status }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setContacts((prev) =>
-          prev.map((c) =>
-            c._id === id ? { ...c, status: data.status || status } : c
-          )
-        );
-      } else {
-        console.error(data.error || "Failed to update");
-      }
-    } catch (error) {
-      console.error("Update error:", error);
+      if (!res.ok) throw new Error(data.error || "Failed to update status");
+      toast.success(`Marked as ${status}`);
+      fetchContacts();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Error updating status");
     } finally {
       setUpdatingId(null);
     }
@@ -115,7 +111,7 @@ export default function ContactsAdmin() {
         <select
           value={statusFilter}
           onChange={(e) => {
-            setStatusFilter(e.target.value);
+            setStatusFilter(e.target.value as any);
             setSkip(0);
           }}
           className="border rounded px-3 py-1 text-sm"
@@ -161,13 +157,12 @@ export default function ContactsAdmin() {
 
               <div className="flex flex-col items-end gap-2 text-right">
                 <span
-                  className={`text-xs font-medium px-2 py-1 rounded ${
-                    c.status === "new"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : c.status === "replied"
+                  className={`text-xs font-medium px-2 py-1 rounded ${c.status === "new"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : c.status === "replied"
                       ? "bg-green-100 text-green-700"
                       : "bg-gray-200 text-gray-700"
-                  }`}
+                    }`}
                 >
                   {c.status}
                 </span>
@@ -178,17 +173,48 @@ export default function ContactsAdmin() {
             </div>
 
             {/* Actions */}
-            {c.status !== "archived" && (
+            <div className="flex justify-end gap-2">
+              {c.status !== "replied" && (
+                <button
+                  onClick={() => handleStatusUpdate(c._id, "replied")}
+                  disabled={updatingId === c._id}
+                  className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${updatingId === c._id
+                    ? "bg-green-400 cursor-wait"
+                    : "bg-green-600 hover:bg-green-700"
+                    }`}
+                >
+                  {updatingId === c._id && (
+                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  )}
+                  Mark as Replied
+                </button>
+              )}
+              {c.status !== "archived" && (
+                <button
+                  onClick={() => handleStatusUpdate(c._id, "archived")}
+                  disabled={updatingId === c._id}
+                  className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${updatingId === c._id
+                    ? "bg-gray-400 cursor-wait"
+                    : "bg-gray-600 hover:bg-gray-700"
+                    }`}
+                >
+                  {updatingId === c._id && (
+                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  )}
+                  Archive
+                </button>
+              )}
+            </div>
+            {/* {c.status !== "archived" && (
               <div className="flex gap-2 justify-end mt-2">
                 {c.status === "new" && (
                   <button
                     onClick={() => handleStatusUpdate(c._id, "replied")}
                     disabled={updatingId === c._id}
-                    className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${
-                      updatingId === c._id
-                        ? "bg-green-400 cursor-wait"
-                        : "bg-green-600 hover:bg-green-700"
-                    }`}
+                    className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${updatingId === c._id
+                      ? "bg-green-400 cursor-wait"
+                      : "bg-green-600 hover:bg-green-700"
+                      }`}
                   >
                     {updatingId === c._id && (
                       <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -199,11 +225,10 @@ export default function ContactsAdmin() {
                 <button
                   onClick={() => handleStatusUpdate(c._id, "archived")}
                   disabled={updatingId === c._id}
-                  className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${
-                    updatingId === c._id
-                      ? "bg-gray-400 cursor-wait"
-                      : "bg-gray-600 hover:bg-gray-700"
-                  }`}
+                  className={`text-xs px-2 py-1 rounded text-white flex items-center gap-1 ${updatingId === c._id
+                    ? "bg-gray-400 cursor-wait"
+                    : "bg-gray-600 hover:bg-gray-700"
+                    }`}
                 >
                   {updatingId === c._id && (
                     <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -211,22 +236,21 @@ export default function ContactsAdmin() {
                   Archive
                 </button>
               </div>
-            )}
+            )} */}
           </div>
         ))}
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-4 text-sm">
+        <div className="flex items-center justify-center gap-3 mt-4 text-sm">
           <button
             disabled={skip === 0}
             onClick={() => setSkip(Math.max(0, skip - limit))}
-            className={`px-3 py-1 rounded border ${
-              skip === 0
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-blue-600 border-blue-300 hover:bg-blue-50"
-            }`}
+            className={`px-3 py-1 rounded border ${skip === 0
+              ? "text-gray-400 cursor-not-allowed"
+              : "text-blue-600 border-blue-300 hover:bg-blue-50"
+              }`}
           >
             Previous
           </button>
@@ -236,11 +260,10 @@ export default function ContactsAdmin() {
           <button
             disabled={skip + limit >= total}
             onClick={() => setSkip(skip + limit)}
-            className={`px-3 py-1 rounded border ${
-              skip + limit >= total
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-blue-600 border-blue-300 hover:bg-blue-50"
-            }`}
+            className={`px-3 py-1 rounded border ${skip + limit >= total
+              ? "text-gray-400 cursor-not-allowed"
+              : "text-blue-600 border-blue-300 hover:bg-blue-50"
+              }`}
           >
             Next
           </button>

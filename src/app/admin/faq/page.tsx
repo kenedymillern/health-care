@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -8,31 +8,56 @@ import {
 } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { FAQ } from "@/types";
+import debounce from "lodash.debounce";
+import { fetchFaqs } from "@/lib/utils";
 
-interface FAQResponse {
-  faqs: FAQ[];
-}
+type FAQResponse = {
+  total: number;
+  data: FAQ[];
+};
 
 const LIMIT = 5;
 
 export default function FAQPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [limit] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [skip, setSkip] = useState(0);
 
-  // Fetch FAQs — v5 syntax
-  const { data, isLoading, isError } = useQuery<FAQResponse>({
-    queryKey: ["faqs", search, page],
-    queryFn: async () => {
-      const res = await fetch(
-        `/api/faq?search=${encodeURIComponent(search)}&page=${page}&limit=${LIMIT}`
-      );
-      if (!res.ok) throw new Error("Failed to fetch FAQs");
-      return res.json();
-    },
-    placeholderData: (prev) => prev, // keeps previous data while loading
-    staleTime: 1000 * 30, // 30 seconds
+  const debouncedSearch = useMemo(() =>
+    debounce((value: string) => {
+      setSearchQuery(value);
+      setSkip(0);
+    }, 500),
+    []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    debouncedSearch(e.target.value);
+  }
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery<FAQResponse>({
+    queryKey: ['faqs', skip, limit, searchQuery],
+    queryFn: () => fetchFaqs({ skip, limit, search: searchQuery }),
+    placeholderData: (previousData) => previousData,
+    staleTime: 0,
   });
+
+  const faqs = data?.data ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.ceil(total / limit);
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   // Create Mutation
   const create = useMutation({
@@ -51,7 +76,7 @@ export default function FAQPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["faqs"] });
       toast.success("FAQ added!");
-      setPage(1); // jump to first page
+      setSkip(1); // jump to first page
     },
     onError: (err: any) => toast.error(err.message || "Create failed"),
   });
@@ -74,9 +99,8 @@ export default function FAQPage() {
     onError: () => toast.error("Delete failed"),
   });
 
-  const faqs = Array.isArray(data) ? data : [];
-  const total = faqs.length;
-  const totalPages = Math.ceil(total / LIMIT);
+  const goPrev = () => setSkip(Math.max(0, skip - limit));
+  const goNext = () => setSkip(skip + limit);
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
@@ -88,12 +112,9 @@ export default function FAQPage() {
       {/* Search */}
       <input
         type="text"
-        placeholder="🔍 Search questions..."
+        placeholder="Search questions..."
         value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1);
-        }}
+        onChange={handleSearchChange}
         className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
       />
 
@@ -135,13 +156,13 @@ export default function FAQPage() {
       </form>
 
       {/* Loading / Error / Empty */}
-      {isLoading ? (
+      {(isLoading || isFetching) && !data ? (
         <div className="text-center py-12">
           <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-blue-500 border-t-transparent"></div>
           <p className="mt-4 text-gray-600">Loading FAQs...</p>
         </div>
-      ) : isError ? (
-        <p className="text-center text-red-500">Failed to load FAQs</p>
+      ) : error ? (
+        <p className="text-center text-red-400">Error loading FAQs</p>
       ) : faqs.length === 0 ? (
         <p className="text-center text-gray-500 py-12 text-lg">
           {search ? "No FAQs match your search." : "No FAQs yet. Create one!"}
@@ -177,25 +198,31 @@ export default function FAQPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-3 mt-10">
+        <div className="flex justify-center items-center gap-3 mt-8">
           <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1}
-            className="px-5 py-2 rounded-lg border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            disabled={skip === 0}
+            onClick={goPrev}
+            className={`px-4 py-2 rounded border cursor-pointer ${skip === 0
+              ? 'text-gray-400 cursor-not-allowed border-gray-400'
+              : 'text-blue-600 border-blue-300 hover:bg-blue-50'
+              }`}
           >
-            ← Prev
+            Prev
           </button>
 
-          <span className="text-sm font-medium text-gray-600">
-            Page <strong>{page}</strong> of <strong>{totalPages}</strong>
+          <span className="text-gray-300">
+            Page {Math.floor(skip / limit) + 1} of {totalPages}
           </span>
 
           <button
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages}
-            className="px-5 py-2 rounded-lg border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            disabled={skip + limit >= total}
+            onClick={goNext}
+            className={`px-4 py-2 rounded border cursor-pointer ${skip + limit >= total
+              ? 'text-gray-400 cursor-not-allowed border-gray-400'
+              : 'text-blue-600 border-blue-300 hover:bg-blue-50'
+              }`}
           >
-            Next →
+            Next
           </button>
         </div>
       )}

@@ -1,26 +1,62 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaPlus, FaMinus } from 'react-icons/fa';
 import { FAQ as FAQTypes } from '@/types';
 import { useQuery } from '@tanstack/react-query';
+import debounce from 'lodash.debounce';
+import { fetchFaqs } from '@/lib/utils';
 
-const fetchFaqs = async (): Promise<FAQTypes[]> => {
-  const response = await fetch('/api/faq');
-  if (!response.ok) {
-    throw new Error('Failed to fetch faqs');
-  }
-  return response.json();
+type FAQResponse = {
+  total: number;
+  data: FAQTypes[];
 };
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const { data: faqs, isLoading, error } = useQuery<FAQTypes[]>({
-    queryKey: ['faqs'],
-    queryFn: fetchFaqs,
-    staleTime: 1000 * 60 * 60, // 1 hour
+  const [search, setSearch] = useState("");
+  const [limit] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [skip, setSkip] = useState(0);
+
+  const debouncedSearch = useMemo(() =>
+    debounce((value: string) => {
+      setSearchQuery(value);
+      setSkip(0);
+    }, 500),
+    []);
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    debouncedSearch(e.target.value);
+  }
+
+  const {
+    data,
+    isLoading,
+    isFetching,
+    error,
+  } = useQuery<FAQResponse>({
+    queryKey: ['faqs', skip, limit, searchQuery],
+    queryFn: () => fetchFaqs({ skip, limit, search: searchQuery }),
+    placeholderData: (previousData) => previousData,
+    staleTime: 0,
   });
+
+  const faqs = data?.data ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.ceil(total / limit);
+
+  useEffect(() => {
+    setOpenIndex(null);
+  }, [faqs]);
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   const toggleFAQ = (index: number) => {
     setOpenIndex(openIndex === index ? null : index);
@@ -40,9 +76,13 @@ export default function FAQ() {
     visible: (i: number) => ({ height: 'auto', opacity: 1, transition: { duration: 0.5, delay: i * 0.2 } }),
   };
 
+  /* ---------- Pagination helpers ---------- */
+  const goPrev = () => setSkip(Math.max(0, skip - limit));
+  const goNext = () => setSkip(skip + limit);
+
   return (
     <section className="section-padding relative overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
-      <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-15"></div>
+      <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-[0.15] pointer-events-none"></div>
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -57,24 +97,33 @@ export default function FAQ() {
           Find answers to common questions about our compassionate healthcare services.
         </p>
       </motion.div>
+      <div className="flex mt-8 justify-center">
+        <input
+          type="text"
+          placeholder="Search questions..."
+          value={search}
+          onChange={handleSearchChange}
+          className="w-full max-w-md border rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-white"
+        />
+      </div>
+
+      {/* ---------- FAQ list ---------- */}
       <div className="mt-12 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {isLoading ? (
-          <div className="flex flex-col space-y-3 animate-pulse">
-            {Array.from({ length: 4 }).map((_, index) => (
-              <div
-                key={index}
-                className="bg-gray-50 rounded-lg shadow-md overflow-hidden flex flex-col"
-              >
-                <div className="h-10 w-full bg-gray-300 mb-2" />
-              </div>
+        {/* Loading skeleton */}
+        {(isLoading || isFetching) && !data ? (
+          <div className="flex flex-col space-y-4 animate-pulse">
+            {Array.from({ length: limit }).map((_, i) => (
+              <div key={i} className="bg-gray-50 rounded-lg h-20 shadow-md" />
             ))}
           </div>
         ) : error ? (
-          <p className="text-center text-red-500">Error loading FAQs</p>
+          <p className="text-center text-red-400">Error loading FAQs</p>
+        ) : faqs.length === 0 ? (
+          <p className="text-center text-gray-300">No FAQs found.</p>
         ) : (
-          faqs?.map((faq, index) => (
+          faqs.map((faq, index) => (
             <motion.div
-              key={index}
+              key={faq._id?.toString() ?? index} // prefer Mongo _id
               custom={index}
               variants={faqVariants}
               initial="hidden"
@@ -103,6 +152,7 @@ export default function FAQ() {
                   )}
                 </motion.div>
               </button>
+
               <AnimatePresence>
                 {openIndex === index && (
                   <motion.div
@@ -118,7 +168,39 @@ export default function FAQ() {
                 )}
               </AnimatePresence>
             </motion.div>
-          )))}
+          ))
+        )}
+
+        {/* ---------- Pagination (only when >1 page) ---------- */}
+        {totalPages > 1 && (
+          <div className="flex justify-center items-center gap-3 mt-8">
+            <button
+              disabled={skip === 0}
+              onClick={goPrev}
+              className={`px-4 py-2 rounded border cursor-pointer ${skip === 0
+                ? 'text-gray-400 cursor-not-allowed border-gray-400'
+                : 'text-blue-600 border-blue-300 hover:bg-blue-50'
+                }`}
+            >
+              Prev
+            </button>
+
+            <span className="text-gray-300">
+              Page {Math.floor(skip / limit) + 1} of {totalPages}
+            </span>
+
+            <button
+              disabled={skip + limit >= total}
+              onClick={goNext}
+              className={`px-4 py-2 rounded border cursor-pointer ${skip + limit >= total
+                ? 'text-gray-400 cursor-not-allowed border-gray-400'
+                : 'text-blue-600 border-blue-300 hover:bg-blue-50'
+                }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import debounce from "lodash.debounce";
 import toast from "react-hot-toast";
 
 interface Career {
@@ -21,21 +22,35 @@ export default function CareersAdmin() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"" | "new" | "reviewed" | "archived">("");
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(1);
   const [limit] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [skip, setSkip] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  const debouncedSearch = useCallback(debounce((value: string) => {
+    setSearchQuery(value);
+    setSkip(0);
+  }, 500), [])
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    debouncedSearch(e.target.value);
+  }
 
   const fetchCareers = async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        skip: String((page - 1) * limit),
-        limit: String(limit),
+        skip: skip.toString(),
+        limit: limit.toString(),
       });
       if (status) params.append("status", status);
-      if (search) params.append("search", search);
+      if (search) params.append("search", searchQuery);
 
-      const res = await fetch(`/api/career?${params.toString()}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SITE_URL || ""}/api/career?${params.toString()}`,
+        { cache: "no-store" }
+      );
       if (!res.ok) throw new Error("Failed to fetch careers");
 
       const data = await res.json();
@@ -51,7 +66,7 @@ export default function CareersAdmin() {
 
   useEffect(() => {
     fetchCareers();
-  }, [page, status]);
+  }, [skip, status, searchQuery]);
 
   const handleStatusUpdate = async (id: string, newStatus: "reviewed" | "archived") => {
     try {
@@ -82,14 +97,14 @@ export default function CareersAdmin() {
           type="text"
           placeholder="Search name, email, or position..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={handleSearchChange}
           className="border rounded px-3 py-2 w-64"
         />
         <select
           value={status}
           onChange={(e) => {
             setStatus(e.target.value as any);
-            setPage(1);
+            setSkip(0);
           }}
           className="border rounded px-3 py-2"
         >
@@ -100,7 +115,7 @@ export default function CareersAdmin() {
         </select>
         <button
           onClick={() => {
-            setPage(1);
+            setSkip(0);
             fetchCareers();
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -111,9 +126,9 @@ export default function CareersAdmin() {
 
       {/* Data Table */}
       {loading ? (
-        <p>Loading...</p>
+        <div className="text-gray-500 text-sm">Loading...</div>
       ) : careers.length === 0 ? (
-        <p>No applications found.</p>
+        <div className="text-gray-500 text-sm">No applications found.</div>
       ) : (
         <div className="space-y-4">
           {careers.map((c) => (
@@ -146,13 +161,12 @@ export default function CareersAdmin() {
                     {new Date(c.createdAt).toLocaleString()}
                   </div>
                   <span
-                    className={`inline-block mt-1 px-2 py-1 rounded text-xs ${
-                      c.status === "new"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : c.status === "reviewed"
+                    className={`inline-block mt-1 px-2 py-1 rounded text-xs ${c.status === "new"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : c.status === "reviewed"
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-200 text-gray-600"
-                    }`}
+                      }`}
                   >
                     {c.status}
                   </span>
@@ -163,7 +177,7 @@ export default function CareersAdmin() {
                 {c.status !== "reviewed" && (
                   <button
                     onClick={() => handleStatusUpdate(c._id, "reviewed")}
-                    className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                    className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 cursor-pointer"
                   >
                     Mark Reviewed
                   </button>
@@ -171,7 +185,7 @@ export default function CareersAdmin() {
                 {c.status !== "archived" && (
                   <button
                     onClick={() => handleStatusUpdate(c._id, "archived")}
-                    className="text-xs bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700"
+                    className="text-xs bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 cursor-pointer"
                   >
                     Archive
                   </button>
@@ -186,19 +200,25 @@ export default function CareersAdmin() {
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-3 mt-6">
           <button
-            onClick={() => setPage((p) => Math.max(p - 1, 1))}
-            disabled={page === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={skip === 0}
+            onClick={() => setSkip(Math.max(0, skip - limit))}
+            className={`px-3 py-1 rounded border ${skip === 0
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-blue-600 border-blue-300 hover:bg-blue-50"
+              }`}
           >
             Prev
           </button>
-          <span>
-            Page {page} of {totalPages}
+          <span className="text-gray-500">
+            Page {Math.floor(skip / limit) + 1} of {totalPages}
           </span>
           <button
-            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-            disabled={page === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            disabled={skip + limit >= total}
+            onClick={() => setSkip(skip + limit)}
+            className={`px-3 py-1 rounded border ${skip + limit >= total
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-blue-600 border-blue-300 hover:bg-blue-50"
+              }`}
           >
             Next
           </button>

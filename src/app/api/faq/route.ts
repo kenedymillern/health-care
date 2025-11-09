@@ -3,13 +3,37 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { FAQ } from '@/types';
 import { ObjectId } from 'mongodb';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const { searchParams } = new URL(req.url)
+    const skip = Math.max(0, parseInt(searchParams.get("skip") || "0"))
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "10")))
+    const search = searchParams.get("search")
+
     const db = await connectToDatabase();
-    const faqs = await db.collection<FAQ>('faqs').find({}).toArray();
-    return NextResponse.json(faqs, { status: 200 });
+    const query: any = {};
+
+    if (search) {
+      const regex = new RegExp(search.trim(), "i")
+      query.$or = [
+        { question: regex }
+      ]
+    }
+    const total = await db.collection("faqs").countDocuments(query)
+    const faqs = await db.collection<FAQ>('faqs')
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    return NextResponse.json({ total, data: faqs }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch FAQs' }, { status: 500 });
+    console.error("Error fetching faqs:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch applications" },
+      { status: 500 }
+    );
   }
 }
 
