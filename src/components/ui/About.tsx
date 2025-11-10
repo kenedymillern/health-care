@@ -30,7 +30,7 @@ export default function About() {
             {/* Hero Section */}
             <section className="relative h-[100vh] w-full">
                 <Image
-                    src="/images/about2.jpg"
+                    src="/images/about3.jpg"
                     alt="About EUTRIV Health Care"
                     fill
                     className="object-cover sm:object-contain"

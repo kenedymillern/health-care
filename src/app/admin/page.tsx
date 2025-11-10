@@ -2,6 +2,7 @@ import React from 'react';
 import { cookies } from "next/headers";
 import { verifyAdminToken, COOKIE_NAME } from "@/lib/adminAuth";
 import { redirect } from "next/navigation";
+import Link from 'next/link';
 
 async function fetchCount(path: string) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || ''}/api${path}`, { cache: 'no-store' });
@@ -13,7 +14,11 @@ async function fetchCount(path: string) {
   if (path === '/services') {
     return data.totalCount || 0;
   }
- 
+
+  if (path === '/newsletter') {
+    return data.total || 0
+  }
+
   if (path === '/reviews') {
     return Array.isArray(data) ? data.length : 0;
   }
@@ -33,33 +38,54 @@ export default async function AdminDashboard() {
 
   if (!payload) redirect("/admin/login");
 
-  const [servicesCount, reviewsCount, careersCount, contactsCount] = await Promise.all([
+  const [
+    servicesCount,
+    reviewsCount,
+    careersCount,
+    contactsCount,
+    newsletterCount
+  ] = await Promise.all([
     fetchCount('/services'),
     fetchCount('/reviews'),
     fetchCount('/career'),
     fetchCount('/contact'),
+    fetchCount('/newsletter'),
   ]);
 
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 border rounded-lg bg-white/100">
-          <p className="text-sm text-gray-500">Services</p>
-          <p className="text-2xl font-semibold">{servicesCount}</p>
-        </div>
+        <Link href={"/admin/services"}>
+          <div className="p-4 border rounded-lg bg-white/100">
+            <p className="text-sm text-gray-500">Services</p>
+            <p className="text-2xl font-semibold">{servicesCount}</p>
+          </div>
+        </Link>
+        <Link href={"/admin/reviews"}>
         <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Reviews</p>
           <p className="text-2xl font-semibold">{reviewsCount}</p>
         </div>
+        </Link>
+        <Link href={"/admin/careers"}>
         <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Career Applications</p>
           <p className="text-2xl font-semibold">{careersCount}</p>
         </div>
+        </Link>
+        <Link href={"/admin/contacts"}>
         <div className="p-4 border rounded-lg bg-white/100">
           <p className="text-sm text-gray-500">Contact Messages</p>
           <p className="text-2xl font-semibold">{contactsCount}</p>
         </div>
+        </Link>
+        <Link href={"/admin/newsletter"}>
+        <div className="p-4 border rounded-lg bg-white/100">
+          <p className="text-sm text-gray-500">Newsletter Subscription</p>
+          <p className="text-2xl font-semibold">{newsletterCount}</p>
+        </div>
+        </Link>
       </div>
       <section className="mt-6">
         <h2 className="text-lg font-semibold mb-2">Quick actions</h2>

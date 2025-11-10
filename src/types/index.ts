@@ -51,3 +51,10 @@ export interface FAQ {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface Newsletter {
+  _id?: ObjectId;
+  email: string
+  createdAt?: Date;
+  updatedAt?: Date;
+}

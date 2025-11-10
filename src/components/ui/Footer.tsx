@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { usePathname } from "next/navigation";
 import {
@@ -12,18 +13,51 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Image from 'next/image';
+import toast from "react-hot-toast";
 
 type NewsletterInput = {
   email: string;
 };
 
 export default function Footer() {
-  const { register, handleSubmit, formState: { errors } } = useForm<NewsletterInput>();
+  const [loading, setLoading] = useState(false);
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<NewsletterInput>();
   const pathname = usePathname() || "/";
   const text = pathname === "/" ? "LLC" : "Care";
 
-  const onSubmit: SubmitHandler<NewsletterInput> = (data) => {
-    console.log('Newsletter subscription:', data);
+  const onSubmit: SubmitHandler<NewsletterInput> = async (data) => {
+    try {
+      setLoading(true);
+
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          toast.error("⚠️ You have already subscribed with this email!");
+        } else if (response.status === 400) {
+          toast.error(result.error || "❌ Invalid request. Please check your input.");
+        } else if (response.status === 500) {
+          toast.error("😔 Something went wrong on our end. Please try again later.");
+        } else {
+          toast.error(result.error || "❌ Subscription failed. Please try again.");
+        }
+        return;
+      }
+
+      toast.success("🎉 Subscription successful! Thank you for joining our newsletter.");
+      reset();
+    } catch (error: any) {
+      console.error("Newsletter subscription error:", error);
+      toast.error(error.message || "🚫 Network error. Please check your connection.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const scrollToTop = () => {
@@ -236,7 +270,7 @@ export default function Footer() {
                 type="submit"
                 className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-[#1E3A8A] px-6 py-3 rounded-r-lg font-semibold font-inter transition-colors"
               >
-                Subscribe
+                {loading ? 'Subscribing...' : 'Subscribe'}
               </motion.button>
             </form>
             {errors.email && (

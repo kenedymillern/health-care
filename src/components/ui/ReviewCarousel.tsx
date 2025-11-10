@@ -74,7 +74,7 @@ export default function ReviewCarousel() {
   };
 
   return (
-    <section id="reviews" className="section-padding relative overflow-hidden bg-gradient-to-b from-lilac-200 to-purple-600">
+    <section id="reviews" className="section-padding relative overflow-hidden bg-gradient-to-r from-[#068124] to-[#d1c6cb]">
       <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-15"></div>
       <motion.div
         initial={{ opacity: 0, y: 50 }}
@@ -83,10 +83,10 @@ export default function ReviewCarousel() {
         transition={{ duration: 0.8 }}
         className="relative z-10 text-center"
       >
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-black drop-shadow-xl">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-playfair font-bold text-white drop-shadow-xl">
           Our Clients’ Stories
         </h2>
-        <p className="mt-4 text-sm sm:text-base md:text-lg font-inter text-black max-w-3xl mx-auto">
+        <p className="mt-4 text-sm sm:text-base md:text-lg font-inter text-white max-w-3xl mx-auto">
           Hear from those who’ve experienced the warmth and dedication of our care services firsthand.
         </p>
       </motion.div>
@@ -111,10 +111,10 @@ export default function ReviewCarousel() {
               whileInView="visible"
               whileHover="hover"
               viewport={{ once: true }}
-              className="glass-effect p-6 sm:p-8 rounded-2xl bg-lilac-100/50 shadow-lg hover:bg-lilac-100/70 transition-all duration-300 relative overflow-hidden"
+              className="glass-effect p-6 sm:p-8 rounded-2xl bg-black/200 shadow-lg hover:bg-lilac-100/70 transition-all duration-300 relative overflow-hidden"
             >
               {/* Quote Icon */}
-              <div className="absolute top-4 left-4 text-black text-4xl font-serif opacity-50">“</div>
+              <div className="absolute top-4 left-4 text-white text-4xl font-serif opacity-50">“</div>
               <div className="flex items-center mb-6">
                 <div className="relative">
                   <Image
@@ -147,7 +147,7 @@ export default function ReviewCarousel() {
                   </div>
                 </div>
               </div>
-              <p className="text-base sm:text-lg font-inter text-black italic leading-relaxed">
+              <p className="text-base font-inter text-white italic leading-relaxed">
                 {review.text}
               </p>
               {/* Subtle Gradient Overlay */}

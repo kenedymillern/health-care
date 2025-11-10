@@ -73,6 +73,7 @@ export default function AdminSidebar({ onClose }: SidebarProps) {
           { href: "/admin/reviews", label: "Reviews" },
           { href: "/admin/careers", label: "Careers" },
           { href: "/admin/contacts", label: "Contacts" },
+          { href: "/admin/newsletter", label: "Newsletter Subscription" },
         ].map((item) => (
           <Link
             key={item.href}

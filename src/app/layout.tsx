@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: 'EUTRIV Health Care',
   description: 'Premium home care services with compassion and quality.',
   icons: {
-    icon: '/images/eutriv-favicon.png', // Default favicon
-    apple: '/images/eutriv-favicon.png', // Apple touch icon (optional)
+    icon: '/images/eutriv-favicon.png',
+    apple: '/images/eutriv-favicon.png',
   },
 };
 

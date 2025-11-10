@@ -178,7 +178,7 @@ export default function Form({ title = "Contact Us", style }: { title?: string, 
   };
 
   return (
-    <section id="contact" className="section-padding relative overflow-hidden bg-white"
+    <section id="contact" className="section-padding relative overflow-hidden bg-gradient-to-r from-[#068124] to-[#d1c6cb]"
       style={style}>
       <div className="absolute inset-0 bg-[url('/images/wave-pattern.svg')] bg-repeat bg-center opacity-10 mix-blend-overlay"></div>
       <div className="relative z-10 max-w-2xl mx-auto">

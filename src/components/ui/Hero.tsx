@@ -1,34 +1,50 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Service } from '@/types';
+import Link from 'next/link';
 
-export default function Hero() {
+interface IServices {
+  services: Service[] | undefined;
+}
+
+export default function Hero({ services }: IServices) {
   const [isOpen, setIsOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const displayedServices = services?.slice(0, 4) || [];
+  const totalSlides = displayedServices.length;
 
   useEffect(() => {
     const t = setTimeout(() => {
       setLoaded(true);
-      // Start content animation 0.8s after video starts (adjustable)
       setTimeout(() => setIsOpen(true), 800);
     }, 600);
     return () => clearTimeout(t);
   }, []);
 
-  // No animation for the door; rely on video's internal animation
+  // Auto-slide every 10s
+  useEffect(() => {
+    if (totalSlides <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % totalSlides);
+    }, 20000);
+    return () => clearInterval(interval);
+  }, [totalSlides]);
+
   const doorVariants = {
     closed: { opacity: 1, transition: { duration: 0 } },
-    open: { opacity: 1, transition: { duration: 0 } }, // Keep video visible
+    open: { opacity: 1, transition: { duration: 0 } },
   };
 
-  // Content animation: scale from 0.5 to 1
   const textVariants = {
     hidden: { scale: 0.5, opacity: 0 },
     visible: {
       scale: 1,
       opacity: 1,
-      transition: { duration: 1.2, delay: 1.0 }, // Smooth reveal
+      transition: { duration: 1.2, delay: 0.5 },
     },
   };
 
@@ -36,12 +52,12 @@ export default function Hero() {
 
   return (
     <section className="relative overflow-hidden h-[70vh] min-h-[400px] sm:h-[80vh] sm:min-h-[480px] lg:h-[90vh] lg:min-h-[615px] flex items-center justify-center">
-      {/* Single Door Video */}
+      {/* Door Video */}
       <motion.div
-        className="absolute inset-0 z-10" // Video below content
+        className="absolute inset-0 z-10"
         variants={doorVariants}
         initial="closed"
-        animate={loaded ? 'open' : 'closed'} // Sync with loaded state
+        animate={loaded ? 'open' : 'closed'}
       >
         <video
           autoPlay
@@ -52,24 +68,88 @@ export default function Hero() {
           src={videoSrc}
           onCanPlay={() => setLoaded(true)}
         />
+        {/* Blue Overlay (over video) */}
+        <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)]" />
       </motion.div>
 
-      {/* Content above video */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center -mt-10 md:-mt-30">
-        <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)] pointer-events-none" /> {/* Background overlay */}
-        <motion.div
-          className="relative z-30 text-center px-6 max-w-[920px] mx-auto" // Content above video and overlay
-          variants={textVariants}
-          initial="hidden"
-          animate={isOpen ? 'visible' : 'hidden'}
-        >
-          <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
-            Caring With Purpose, Serving With Heart
-          </h1>
-          <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
-            Providing compassionate, reliable <br /> care that makes a lasting difference in the lives of those we serve.
-          </h2>
-        </motion.div>
+      {/* Carousel Overlay */}
+      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+        {/* Dynamic Service Background */}
+        <AnimatePresence mode="wait">
+          {displayedServices.length > 0 && (
+            <motion.div
+              key={
+                (displayedServices[currentIndex]?._id?.toString() ??
+                displayedServices[currentIndex]?.slug ??
+                currentIndex).toString()
+              }
+              className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+              style={{
+                backgroundImage: `url(${displayedServices[currentIndex].image})`,
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Dark Gradient Overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] z-30" />
+
+        {/* Carousel Content */}
+        <AnimatePresence mode="wait">
+          {displayedServices.length > 0 && (
+            <motion.div
+              key={
+                (displayedServices[currentIndex]?._id?.toString() ??
+                displayedServices[currentIndex]?.slug ??
+                currentIndex).toString()
+              }
+              className="relative z-40 text-white max-w-2xl mx-auto sm:-mt-40"
+              variants={textVariants}
+              initial="hidden"
+              animate={isOpen ? 'visible' : 'hidden'}
+              exit={{ opacity: 0, y: -30 }}
+              transition={{ duration: 1 }}
+            >
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 drop-shadow-2xl">
+                {displayedServices[currentIndex].title}
+              </h1>
+              <p className="text-base sm:text-lg lg:text-xl mb-6 text-gray-100 leading-relaxed drop-shadow-md">
+                {displayedServices[currentIndex].shortDescription}
+              </p>
+              <Link
+                href={`/services/${displayedServices[currentIndex].slug}`}
+                className="inline-block bg-[#EA9123] hover:bg-[#d97c12] text-white font-semibold px-6 py-3 rounded-full shadow-md transition-all duration-300"
+              >
+                Learn More
+              </Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Carousel Controls */}
+        <div className="absolute bottom-10 sm:bottom-10 flex items-center gap-3 z-40">
+          {displayedServices.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentIndex(idx)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                currentIndex === idx
+                  ? 'bg-[#EA9123] scale-125'
+                  : 'bg-white/70 hover:bg-[#EA9123]/70'
+              }`}
+            />
+          ))}
+          {/* "More services" control */}
+          <Link
+            href="/services"
+            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-[#EA9123] hover:border-[#EA9123] transition-all text-xs font-semibold"
+          >
+            +
+          </Link>
+        </div>
       </div>
 
       <style jsx>{`
@@ -80,88 +160,3 @@ export default function Hero() {
     </section>
   );
 }
-
-
-
-// 'use client';
-
-// import { useEffect, useState } from 'react';
-// import { motion } from 'framer-motion';
-
-// export default function Hero() {
-//   const [isDoorOpen, setIsDoorOpen] = useState(false);
-//   const [doorsLoaded, setDoorsLoaded] = useState(false);
-
-//   // Simulate loading effect (like waiting for images before opening)
-//   useEffect(() => {
-//     const timeout = setTimeout(() => {
-//       setDoorsLoaded(true);
-//       setTimeout(() => setIsDoorOpen(true), 400); // open after small delay
-//     }, 600); // simulate preload
-
-//     return () => clearTimeout(timeout);
-//   }, []);
-
-//   const doorVariants = {
-//     closed: { x: 0 },
-//     open: (side: string) => ({
-//       x: side === 'left' ? '-85%' : '85%',
-//       transition: { duration: 1.8, delay: 0.6 },
-//     }),
-//   };
-
-//   const contentVariants = {
-//     initial: { opacity: 0, scale: 0.9 },
-//     animate: {
-//       opacity: 1,
-//       scale: 1,
-//       transition: { duration: 1, delay: 1.2 },
-//     },
-//   };
-
-//   return (
-//     <section className="relative h-[90vh] flex items-center justify-center overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
-//       {/* Sliding White Doors */}
-//       <div className="door-container absolute inset-0 z-20 flex">
-//         {/* Left Door */}
-//         <motion.div
-//           className="door-panel flex-1 bg-[rgb(60,88,120)]"
-//           variants={doorVariants}
-//           initial="closed"
-//           animate={isDoorOpen ? 'open' : 'closed'}
-//           custom="left"
-//         />
-
-//         {/* Right Door */}
-//         <motion.div
-//           className="door-panel flex-1 bg-[rgb(60,88,120)]"
-//           variants={doorVariants}
-//           initial="closed"
-//           animate={isDoorOpen ? 'open' : 'closed'}
-//           custom="right"
-//         />
-//       </div>
-
-//       {/* Hero Content */}
-//       {doorsLoaded && (
-//         <motion.div
-//           className="relative text-center max-w-[90%] mx-auto z-10 px-4 -mt-30"
-//           variants={contentVariants}
-//           initial="initial"
-//           animate="animate"
-//         >
-//           <div className="p-6 md:p-10">
-//             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold font-lora leading-tight drop-shadow-lg text-white">
-//               Unlocking <span className="text-yellow-400">Health Solutions</span>
-//               <br />
-//               for Real <span className="text-yellow-400">Impact</span>
-//             </h1>
-//             <p className="mt-6 text-base sm:text-lg md:text-xl lg:text-2xl text-gray-100 font-poppins drop-shadow-sm">
-//               Providing personalized care to support your loved ones at home.
-//             </p>
-//           </div>
-//         </motion.div>
-//       )}
-//     </section>
-//   );
-// }

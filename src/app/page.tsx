@@ -30,11 +30,10 @@ export default function Home() {
 
   return (
     <>
-      <Hero />
-      <section className="section-padding relative overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
+      <Hero services={services} />
+      {/* <section className="section-padding relative overflow-hidden bg-gradient-to-r from-[#1E3A8A] to-[#065F46]">
         <div className="absolute inset-0 bg-[url('/images/home-care-bg.jpg')] bg-cover bg-center opacity-20"></div>
         <div className="relative z-10">
-          {/* Curved Top Corners Wrapper */}
           <div className="clip-path-curved-top bg-transparent">
             <motion.div
               initial={{ opacity: 0, y: 50 }}
@@ -52,7 +51,6 @@ export default function Home() {
             </motion.div>
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-12">
               {isLoading ? (
-                // Loading state
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-12 animate-pulse">
                   {[...Array(3)].map((_, index) => (
                     <div
@@ -78,7 +76,6 @@ export default function Home() {
                   ))}
                 </div>
               ) : error ? (
-                // Error state
                 <p className="text-red-400 text-center col-span-full">Error loading services</p>
               ) : (
                 <>
@@ -95,7 +92,6 @@ export default function Home() {
                         }}
                         className="relative rounded-2xl p-6 text-white shadow-xl overflow-hidden bg-gray-800 transition-all duration-300 cursor-pointer"
                       >
-                        {/* Circular Image */}
                         <div className="flex justify-center mb-6">
                           <div className="relative w-48 h-48">
                             <img
@@ -106,7 +102,6 @@ export default function Home() {
                             <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#1E3A8A]/40 to-[#065F46]/40 blur-md" />
                           </div>
                         </div>
-                        {/* Service Title and Description */}
                         <div className="relative">
                           <h3 className="text-2xl sm:text-3xl font-playfair font-bold text-center mb-4 text-[#D4AF37] drop-shadow-md">
                             {service.title}
@@ -120,7 +115,7 @@ export default function Home() {
                             className="absolute inset-0 bg-black rounded-2xl pointer-events-none"
                           />
                         </div>
-                        {/* Arrow Button */}
+    
                         <motion.div
                           whileHover={{ scale: 1.1, rotate: 20 }}
                           className="mt-8 flex justify-center"
@@ -132,7 +127,6 @@ export default function Home() {
                       </motion.div>
                     </Link>
                   ))}
-                  {/* View More Services Card */}
                   <Link href="/services">
                     <motion.div
                       initial={{ opacity: 0, scale: 0.5, y: 0, x: '50%' }}
@@ -183,8 +177,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
-      <ReviewCarousel />
+      </section> */}
       <WebBanner
         title="Why Choose Us?"
         subtitle="Experience care that feels like family."
@@ -192,6 +185,7 @@ export default function Home() {
       />
       <Form title="Set An Appointment" />
       <FAQ />
+      <ReviewCarousel />
     </>
   );
 }
