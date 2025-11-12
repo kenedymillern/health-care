@@ -13,6 +13,8 @@ export default function Hero({ services }: IServices) {
   const [isOpen, setIsOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [showMessage, setShowMessage] = useState(false);
+  const [hideMessage, setHideMessage] = useState(false);
 
   const displayedServices = services?.slice(0, 4) || [];
   const totalSlides = displayedServices.length;
@@ -20,7 +22,17 @@ export default function Hero({ services }: IServices) {
   useEffect(() => {
     const t = setTimeout(() => {
       setLoaded(true);
-      setTimeout(() => setIsOpen(true), 800);
+      setTimeout(() => {
+        setIsOpen(true);
+        // Show message after door opens
+        setShowMessage(true);
+
+        // Hide message after 5 seconds
+        setTimeout(() => {
+          setHideMessage(true);
+          setTimeout(() => setShowMessage(false), 800); // match fade-out duration
+        }, 7000);
+      }, 800);
     }, 600);
     return () => clearTimeout(t);
   }, []);
@@ -48,6 +60,23 @@ export default function Hero({ services }: IServices) {
     },
   };
 
+  const messageVariants = {
+    hidden: { scale: 0.4, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        scale: { duration: 1.2, delay: 0.5 },
+        opacity: { duration: 0.8 },
+      },
+    },
+    exit: {
+      scale: 0.9,
+      opacity: 0,
+      transition: { duration: 0.8, delay: 0.5 },
+    },
+  };
+
   const videoSrc = '/videos/door-open.mp4';
 
   return (
@@ -72,16 +101,48 @@ export default function Hero({ services }: IServices) {
         <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)]" />
       </motion.div>
 
+      {/* Compassionate Care Message - Shows for 5s */}
+      <AnimatePresence>
+        {showMessage && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center -mt-10 md:-mt-30">
+            {/* <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)] pointer-events-none" /> */}
+            {/* Background overlay */}
+            <motion.div className="relative z-50 text-center px-6 max-w-[920px] mx-auto"
+              variants={messageVariants} initial="hidden" animate={isOpen ? 'visible' : 'hidden'} >
+              <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
+                Caring With Purpose, Serving With Heart </h1>
+              <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                Providing compassionate, reliable <br />
+                care that makes a lasting difference in the lives of those we serve.
+              </h2>
+            </motion.div>
+          </div>
+          // <motion.div
+          //   className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
+          //   initial="hidden"
+          //   animate="visible"
+          //   exit="exit"
+          //   variants={messageVariants}
+          // >
+          //   <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
+          //     Caring With Purpose, Serving With Heart
+          //   </h1>
+          //   <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
+          //     Providing compassionate, reliable <br /> care that makes a lasting difference in the lives of those we serve. </h2>
+          // </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Carousel Overlay */}
       <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
         {/* Dynamic Service Background */}
         <AnimatePresence mode="wait">
-          {displayedServices.length > 0 && (
+          {displayedServices.length > 0 && !showMessage && (
             <motion.div
               key={
                 (displayedServices[currentIndex]?._id?.toString() ??
-                displayedServices[currentIndex]?.slug ??
-                currentIndex).toString()
+                  displayedServices[currentIndex]?.slug ??
+                  currentIndex).toString()
               }
               className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
               style={{
@@ -99,12 +160,12 @@ export default function Hero({ services }: IServices) {
 
         {/* Carousel Content */}
         <AnimatePresence mode="wait">
-          {displayedServices.length > 0 && (
+          {displayedServices.length > 0 && !showMessage && (
             <motion.div
               key={
                 (displayedServices[currentIndex]?._id?.toString() ??
-                displayedServices[currentIndex]?.slug ??
-                currentIndex).toString()
+                  displayedServices[currentIndex]?.slug ??
+                  currentIndex).toString()
               }
               className="relative z-40 text-white max-w-2xl mx-auto sm:-mt-40"
               variants={textVariants}
@@ -130,26 +191,27 @@ export default function Hero({ services }: IServices) {
         </AnimatePresence>
 
         {/* Carousel Controls */}
-        <div className="absolute bottom-10 sm:bottom-10 flex items-center gap-3 z-40">
-          {displayedServices.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentIndex(idx)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                currentIndex === idx
+        {displayedServices.length > 0 && !showMessage && (
+          <div className="absolute bottom-10 sm:bottom-10 flex items-center gap-3 z-40">
+            {displayedServices.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${currentIndex === idx
                   ? 'bg-[#EA9123] scale-125'
                   : 'bg-white/70 hover:bg-[#EA9123]/70'
-              }`}
-            />
-          ))}
-          {/* "More services" control */}
-          <Link
-            href="/services"
-            className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-[#EA9123] hover:border-[#EA9123] transition-all text-xs font-semibold"
-          >
-            +
-          </Link>
-        </div>
+                  }`}
+              />
+            ))}
+            {/* "More services" control */}
+            <Link
+              href="/services"
+              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-[#EA9123] hover:border-[#EA9123] transition-all text-xs font-semibold"
+            >
+              +
+            </Link>
+          </div>
+        )}
       </div>
 
       <style jsx>{`

@@ -65,7 +65,7 @@ export default function Services() {
       {/* Hero Section */}
       <section className="relative h-[100vh] w-full">
         <Image
-          src="/images/service.jpg"
+          src="/images/service2.jpg"
           alt="About EUTRIV Health Care"
           fill
           className="object-cover"
