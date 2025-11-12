@@ -15,29 +15,38 @@ export default function Hero({ services }: IServices) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showMessage, setShowMessage] = useState(false);
   const [hideMessage, setHideMessage] = useState(false);
+  const [showCarousel, setShowCarousel] = useState(false); // NEW STATE
 
   const displayedServices = services?.slice(0, 4) || [];
   const totalSlides = displayedServices.length;
 
   useEffect(() => {
+    // Step 1: wait for short delay to ensure video load
     const t = setTimeout(() => {
       setLoaded(true);
+
+      // Step 2: open cinematic door
       setTimeout(() => {
         setIsOpen(true);
-        // Show message after door opens
+        // Step 3: show message after door opens
         setShowMessage(true);
 
-        // Hide message after 7 seconds
+        // Step 4: hide message after 7s
         setTimeout(() => {
           setHideMessage(true);
-          setTimeout(() => setShowMessage(false), 800); // match fade-out duration
+          setTimeout(() => {
+            setShowMessage(false);
+            // Step 5: show carousel after message fully fades
+            setShowCarousel(true);
+          }, 800); // match fade-out duration
         }, 7000);
       }, 800);
     }, 600);
+
     return () => clearTimeout(t);
   }, []);
 
-  // Auto-slide every 10s
+  // Auto-slide every 20s
   useEffect(() => {
     if (totalSlides <= 1) return;
     const interval = setInterval(() => {
@@ -101,118 +110,114 @@ export default function Hero({ services }: IServices) {
         <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)]" />
       </motion.div>
 
-      {/* Compassionate Care Message - Shows for 5s */}
+      {/* Compassionate Care Message - Shows for 7s */}
       <AnimatePresence>
         {showMessage && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center -mt-10 md:-mt-30">
-            {/* <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)] pointer-events-none" /> */}
-            {/* Background overlay */}
-            <motion.div className="relative z-50 text-center px-6 max-w-[920px] mx-auto"
-              variants={messageVariants} initial="hidden" animate={isOpen ? 'visible' : 'hidden'} >
+          <motion.div
+            className="absolute inset-0 z-50 flex items-center justify-center -mt-10 md:-mt-30"
+            variants={messageVariants}
+            initial="hidden"
+            animate={isOpen ? 'visible' : 'hidden'}
+            exit="exit"
+          >
+            <div className="relative z-50 text-center px-6 max-w-[920px] mx-auto">
               <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
-                Caring With Purpose, Serving With Heart </h1>
+                Caring With Purpose, Serving With Heart
+              </h1>
               <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
                 Providing compassionate, reliable <br />
-                care that makes a lasting difference in the lives of those we serve.
+                care that makes a lasting difference in the lives of those we
+                serve.
               </h2>
-            </motion.div>
-          </div>
-          // <motion.div
-          //   className="absolute inset-0 z-50 flex flex-col items-center justify-center pointer-events-none"
-          //   initial="hidden"
-          //   animate="visible"
-          //   exit="exit"
-          //   variants={messageVariants}
-          // >
-          //   <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
-          //     Caring With Purpose, Serving With Heart
-          //   </h1>
-          //   <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
-          //     Providing compassionate, reliable <br /> care that makes a lasting difference in the lives of those we serve. </h2>
-          // </motion.div>
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Carousel Overlay */}
-      <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
-        {/* Dynamic Service Background */}
-        <AnimatePresence mode="wait">
-          {displayedServices.length > 0 && !showMessage && (
-            <motion.div
-              key={
-                (displayedServices[currentIndex]?._id?.toString() ??
-                  displayedServices[currentIndex]?.slug ??
-                  currentIndex).toString()
-              }
-              className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-              style={{
-                backgroundImage: `url(${displayedServices[currentIndex].image})`,
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
-          )}
-        </AnimatePresence>
-
-        {/* Dark Gradient Overlay for better text visibility */}
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] z-30" />
-
-        {/* Carousel Content */}
-        <AnimatePresence mode="wait">
-          {displayedServices.length > 0 && !showMessage && (
-            <motion.div
-              key={
-                (displayedServices[currentIndex]?._id?.toString() ??
-                  displayedServices[currentIndex]?.slug ??
-                  currentIndex).toString()
-              }
-              className="relative z-40 text-white max-w-2xl mx-auto sm:-mt-40"
-              variants={textVariants}
-              initial="hidden"
-              animate={isOpen ? 'visible' : 'hidden'}
-              exit={{ opacity: 0, y: -30 }}
-              transition={{ duration: 1 }}
-            >
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 drop-shadow-2xl">
-                {displayedServices[currentIndex].title}
-              </h1>
-              <p className="text-base sm:text-lg lg:text-xl mb-6 text-gray-100 leading-relaxed drop-shadow-md">
-                {displayedServices[currentIndex].shortDescription}
-              </p>
-              <Link
-                href={`/services/${displayedServices[currentIndex].slug}`}
-                className="inline-block bg-[#EA9123] hover:bg-[#d97c12] text-white font-semibold px-6 py-3 rounded-full shadow-md transition-all duration-300"
-              >
-                Learn More
-              </Link>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Carousel Controls */}
-        {displayedServices.length > 0 && !showMessage && (
-          <div className="absolute bottom-10 sm:bottom-10 flex items-center gap-3 z-40">
-            {displayedServices.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${currentIndex === idx
-                  ? 'bg-[#EA9123] scale-125'
-                  : 'bg-white/70 hover:bg-[#EA9123]/70'
-                  }`}
+      {showCarousel && (
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
+          {/* Dynamic Service Background */}
+          <AnimatePresence mode="wait">
+            {displayedServices.length > 0 && (
+              <motion.div
+                key={
+                  (displayedServices[currentIndex]?._id?.toString() ??
+                    displayedServices[currentIndex]?.slug ??
+                    currentIndex
+                  ).toString()
+                }
+                className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+                style={{
+                  backgroundImage: `url(${displayedServices[currentIndex].image})`,
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               />
-            ))}
-            {/* "More services" control */}
-            <Link
-              href="/services"
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-[#EA9123] hover:border-[#EA9123] transition-all text-xs font-semibold"
-            >
-              +
-            </Link>
-          </div>
-        )}
-      </div>
+            )}
+          </AnimatePresence>
+
+          {/* Dark Gradient Overlay for better text visibility */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] z-30" />
+
+          {/* Carousel Content */}
+          <AnimatePresence mode="wait">
+            {displayedServices.length > 0 && (
+              <motion.div
+                key={
+                  (displayedServices[currentIndex]?._id?.toString() ??
+                    displayedServices[currentIndex]?.slug ??
+                    currentIndex
+                  ).toString()
+                }
+                className="relative z-40 text-white max-w-2xl mx-auto sm:-mt-40"
+                variants={textVariants}
+                initial="hidden"
+                animate={isOpen ? 'visible' : 'hidden'}
+                exit={{ opacity: 0, y: -30 }}
+                transition={{ duration: 1 }}
+              >
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 drop-shadow-2xl">
+                  {displayedServices[currentIndex].title}
+                </h1>
+                <p className="text-base sm:text-lg lg:text-xl mb-6 text-gray-100 leading-relaxed drop-shadow-md">
+                  {displayedServices[currentIndex].shortDescription}
+                </p>
+                <Link
+                  href={`/services/${displayedServices[currentIndex].slug}`}
+                  className="inline-block bg-[#EA9123] hover:bg-[#d97c12] text-white font-semibold px-6 py-3 rounded-full shadow-md transition-all duration-300"
+                >
+                  Learn More
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Carousel Controls */}
+          {displayedServices.length > 0 && (
+            <div className="absolute bottom-10 sm:bottom-10 flex items-center gap-3 z-40">
+              {displayedServices.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    currentIndex === idx
+                      ? 'bg-[#EA9123] scale-125'
+                      : 'bg-white/70 hover:bg-[#EA9123]/70'
+                  }`}
+                />
+              ))}
+              <Link
+                href="/services"
+                className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-[#EA9123] hover:border-[#EA9123] transition-all text-xs font-semibold"
+              >
+                +
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       <style jsx>{`
         video::-webkit-media-controls {
