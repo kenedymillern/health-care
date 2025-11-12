@@ -27,7 +27,7 @@ export default function Hero({ services }: IServices) {
         // Show message after door opens
         setShowMessage(true);
 
-        // Hide message after 5 seconds
+        // Hide message after 7 seconds
         setTimeout(() => {
           setHideMessage(true);
           setTimeout(() => setShowMessage(false), 800); // match fade-out duration

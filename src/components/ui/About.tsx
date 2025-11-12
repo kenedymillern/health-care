@@ -33,7 +33,7 @@ export default function About() {
                     src="/images/about4.jpg"
                     alt="About EUTRIV Health Care"
                     fill
-                    className="object-cover sm:object-contain"
+                    className="object-cover"
                     priority
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
