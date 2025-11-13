@@ -13,12 +13,10 @@ export default function Hero({ services }: IServices) {
   const [isOpen, setIsOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showMessage, setShowMessage] = useState(false);
-  const [hideMessage, setHideMessage] = useState(false);
-  const [showCarousel, setShowCarousel] = useState(false); // NEW STATE
+  const [showCarousel, setShowCarousel] = useState(false);
 
   const displayedServices = services?.slice(0, 4) || [];
-  const totalSlides = displayedServices.length;
+  const totalSlides = displayedServices.length + 1; // +1 for Compassionate Care Message
 
   useEffect(() => {
     // Step 1: wait for short delay to ensure video load
@@ -28,32 +26,37 @@ export default function Hero({ services }: IServices) {
       // Step 2: open cinematic door
       setTimeout(() => {
         setIsOpen(true);
-        // Step 3: show message after door opens
-        setShowMessage(true);
 
-        // Step 4: hide message after 7s
+        // Step 3: start carousel (with message as first slide) after door opens
         setTimeout(() => {
-          setHideMessage(true);
-          setTimeout(() => {
-            setShowMessage(false);
-            // Step 5: show carousel after message fully fades
-            setShowCarousel(true);
-          }, 800); // match fade-out duration
-        }, 7000);
+          setShowCarousel(true);
+        }, 800);
       }, 800);
     }, 600);
 
     return () => clearTimeout(t);
   }, []);
 
-  // Auto-slide every 20s
+  // Auto-advance every 20s (except first slide lasts 7s)
   useEffect(() => {
-    if (totalSlides <= 1) return;
-    const interval = setInterval(() => {
+    if (totalSlides <= 1 || !showCarousel) return;
+
+    const advance = () => {
       setCurrentIndex((prev) => (prev + 1) % totalSlides);
-    }, 20000);
-    return () => clearInterval(interval);
-  }, [totalSlides]);
+    };
+
+    const timeouts: NodeJS.Timeout[] = [];
+
+    if (currentIndex === 0) {
+      // First slide (message) shows for 12s
+      timeouts.push(setTimeout(advance, 12000));
+    } else {
+      // Service slides show for 20s
+      timeouts.push(setTimeout(advance, 20000));
+    }
+
+    return () => timeouts.forEach(clearTimeout);
+  }, [currentIndex, totalSlides, showCarousel]);
 
   const doorVariants = {
     closed: { opacity: 1, transition: { duration: 0 } },
@@ -82,11 +85,16 @@ export default function Hero({ services }: IServices) {
     exit: {
       scale: 0.9,
       opacity: 0,
-      transition: { duration: 0.8, delay: 0.5 },
+      transition: { duration: 0.8 },
     },
   };
 
   const videoSrc = '/videos/door-open.mp4';
+
+  // Determine current content
+  const isMessageSlide = showCarousel && currentIndex === 0;
+  const serviceIndex = currentIndex - 1;
+  const currentService = displayedServices[serviceIndex];
 
   return (
     <section className="relative overflow-hidden h-[70vh] min-h-[400px] sm:h-[80vh] sm:min-h-[480px] lg:h-[90vh] lg:min-h-[615px] flex items-center justify-center">
@@ -110,107 +118,121 @@ export default function Hero({ services }: IServices) {
         <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)]" />
       </motion.div>
 
-      {/* Compassionate Care Message - Shows for 7s */}
-      <AnimatePresence>
-        {showMessage && (
-          <motion.div
-            className="absolute inset-0 z-50 flex items-center justify-center -mt-10 md:-mt-30"
-            variants={messageVariants}
-            initial="hidden"
-            animate={isOpen ? 'visible' : 'hidden'}
-            exit="exit"
-          >
-            <div className="relative z-50 text-center px-6 max-w-[920px] mx-auto">
-              <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
-                Caring With Purpose, Serving With Heart
-              </h1>
-              <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
-                Providing compassionate, reliable <br />
-                care that makes a lasting difference in the lives of those we
-                serve.
-              </h2>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Carousel Overlay */}
+      {/* Carousel Overlay - Unified for Message + Services */}
       {showCarousel && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6">
-          {/* Dynamic Service Background */}
+          {/* Background: Video overlay for message, service image otherwise */}
           <AnimatePresence mode="wait">
-            {displayedServices.length > 0 && (
+            {isMessageSlide ? (
               <motion.div
-                key={
-                  (displayedServices[currentIndex]?._id?.toString() ??
-                    displayedServices[currentIndex]?.slug ??
-                    currentIndex
-                  ).toString()
-                }
-                className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-                style={{
-                  backgroundImage: `url(${displayedServices[currentIndex].image})`,
-                }}
+                key="message-bg"
+                className="absolute inset-0"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-              />
+              >
+                <div className="absolute inset-0 bg-[rgba(37,92,157,0.6)]" />
+              </motion.div>
+            ) : (
+              currentService && (
+                <motion.div
+                  key={currentService._id?.toString() ?? currentService.slug}
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${currentService.image})` }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1 }}
+                />
+              )
             )}
           </AnimatePresence>
 
-          {/* Dark Gradient Overlay for better text visibility */}
+          {/* Dark Gradient Overlay for text visibility */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] z-30" />
 
           {/* Carousel Content */}
           <AnimatePresence mode="wait">
-            {displayedServices.length > 0 && (
+            {isMessageSlide ? (
+              // Compassionate Care Message - First Slide
               <motion.div
-                key={
-                  (displayedServices[currentIndex]?._id?.toString() ??
-                    displayedServices[currentIndex]?.slug ??
-                    currentIndex
-                  ).toString()
-                }
-                className="relative z-40 text-white max-w-2xl mx-auto sm:-mt-40"
-                variants={textVariants}
+                key="compassionate-message"
+                className="relative z-40 text-center max-w-[920px] mx-auto -mt-10 md:-mt-30"
+                variants={messageVariants}
                 initial="hidden"
-                animate={isOpen ? 'visible' : 'hidden'}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 1 }}
+                animate="visible"
+                exit="exit"
               >
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 drop-shadow-2xl">
-                  {displayedServices[currentIndex].title}
+                <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
+                  Caring With Purpose, Serving With Heart
                 </h1>
-                <p className="text-base sm:text-lg lg:text-xl mb-6 text-gray-100 leading-relaxed drop-shadow-md">
-                  {displayedServices[currentIndex].shortDescription}
-                </p>
-                <Link
-                  href={`/services/${displayedServices[currentIndex].slug}`}
-                  className="inline-block bg-[#EA9123] hover:bg-[#d97c12] text-white font-semibold px-6 py-3 rounded-full shadow-md transition-all duration-300"
-                >
-                  Learn More
-                </Link>
+                <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                  Providing compassionate, reliable <br />
+                  care that makes a lasting difference in the lives of those we serve.
+                </h2>
               </motion.div>
+            ) : (
+              currentService && (
+                // Service Slide
+                <motion.div
+                  key={currentService._id?.toString() ?? currentService.slug}
+                  className="relative z-40 text-white max-w-2xl mx-auto sm:-mt-40"
+                  variants={textVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit={{ opacity: 0, y: -30 }}
+                  transition={{ duration: 1 }}
+                >
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 drop-shadow-2xl">
+                    {currentService.title}
+                  </h1>
+                  <p className="text-base sm:text-lg lg:text-xl mb-6 text-gray-100 leading-relaxed drop-shadow-md">
+                    {currentService.shortDescription}
+                  </p>
+                  <Link
+                    href={`/services/${currentService.slug}`}
+                    className="inline-block bg-[#EA9123] hover:bg-[#d97c12] text-white font-semibold px-6 py-3 rounded-full shadow-md transition-all duration-300"
+                  >
+                    Learn More
+                  </Link>
+                </motion.div>
+              )
             )}
           </AnimatePresence>
 
-          {/* Carousel Controls */}
+          {/* Unified Carousel Controls - Includes Message as First Dot */}
           {displayedServices.length > 0 && (
             <div className="absolute bottom-10 sm:bottom-10 flex items-center gap-3 z-40">
+              {/* Dot for Compassionate Care Message */}
+              <button
+                onClick={() => setCurrentIndex(0)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  currentIndex === 0
+                    ? 'bg-[#EA9123] scale-125'
+                    : 'bg-white/70 hover:bg-[#EA9123]/70'
+                }`}
+                aria-label="Compassionate Care Message"
+              />
+
+              {/* Dots for Services */}
               {displayedServices.map((_, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setCurrentIndex(idx)}
+                  onClick={() => setCurrentIndex(idx + 1)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    currentIndex === idx
+                    currentIndex === idx + 1
                       ? 'bg-[#EA9123] scale-125'
                       : 'bg-white/70 hover:bg-[#EA9123]/70'
                   }`}
+                  aria-label={`Service ${idx + 1}`}
                 />
               ))}
+
+              {/* View All Services */}
               <Link
                 href="/services"
                 className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-[#EA9123] hover:border-[#EA9123] transition-all text-xs font-semibold"
+                aria-label="View all services"
               >
                 +
               </Link>
