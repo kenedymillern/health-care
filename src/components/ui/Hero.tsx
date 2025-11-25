@@ -78,7 +78,7 @@ export default function Hero({ services }: IServices) {
       scale: 1,
       opacity: 1,
       transition: {
-        scale: { duration: 1.2 },
+        scale: { duration: 1.5 },
         opacity: { duration: 0.8 },
       },
     },
