@@ -22,7 +22,7 @@ export default function Hero({ services }: IServices) {
   useEffect(() => {
     if (!doorReady) return;
 
-    setDoorOpening(true);
+    setDoorOpening(true); 
 
     const t = setTimeout(() => setCarouselActive(true), 600);
     return () => clearTimeout(t);
