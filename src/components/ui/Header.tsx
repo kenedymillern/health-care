@@ -42,7 +42,7 @@ export default function Header() {
     },
     {
       icon: FaMapMarkerAlt,
-      label: "12808 W Airport Blvd, Suite 225C\nSugar Land, TX 77478",
+      label: "1506 Broadway St. Suite 211 Pearland, Texas 77581",
       href: "https://maps.google.com/?q=12808+W+Airport+Blvd,+Suite+225C,+Sugar+Land,+TX+77478",
       key: "address",
     },

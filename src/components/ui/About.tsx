@@ -57,8 +57,8 @@ export default function About() {
                 </p>
                 <p className="text-gray-600 leading-relaxed mb-6">
                     EUTRIV Health Care was founded in 2023 with one goal in mind — to bring quality,
-                    compassionate care right to your doorstep. Based in Sugar Land, Texas, we’re proud
-                    to serve families across the state by providing Skilled Nursing, Personal Assistance
+                    compassionate care right to your doorstep. Based in Housting and surroundeing areas, we’re proud
+                    to support families across the city by providing Skilled Nursing, Personal Assistance
                     Services (PAS), and Private Duty Nursing (PDN).
                     At EUTRIV Health, we believe that everyone deserves to live safely, comfortably,
                     and independently at home. Our nurses and caregivers are experienced, dependable,

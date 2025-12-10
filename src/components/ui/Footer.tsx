@@ -220,8 +220,7 @@ export default function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPinIcon className="h-5 w-5 text-[#D4AF37] mt-1 flex-shrink-0" />
                 <div>
-                  <p className="text-gray-300 font-inter">12808 W Airport Blvd, Suite 225C</p>
-                  <p className="text-gray-300 font-inter">Sugar Land, TX 77478</p>
+                  <p className="text-gray-300 font-inter">1506 Broadway St. Suite 211 Pearland, Texas 77581</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">

@@ -43,8 +43,7 @@ export default function Reachout() {
                             Visit us at EUTRIV Health Care LLC to experience our client-focused care in person. Our team is ready to assist you with your wellness needs.
                         </p>
                         <p className="text-gray-800 font-semibold mb-2">
-                            <span className="font-bold">Location:</span> 12808 W Airport Blvd, Suite 225C
-                            Sugar Land, TX 77478
+                            <span className="font-bold">Location:</span> 1506 Broadway St. Suite 211 Pearland, Texas 77581
                         </p>
                         <p className="text-gray-800 font-semibold mb-2">
                             <span className="font-bold">Phone:</span> (281) 455-2017
