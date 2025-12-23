@@ -163,13 +163,13 @@ export default function Hero({ services }: IServices) {
                 animate="visible"
                 exit="exit"
               >
-                <h1 className="text-white font-extrabold leading-tight mx-auto text-2xl sm:text-3xl md:text-4xl lg:text-6xl">
+                <h3 className="text-white font-extrabold leading-tight mx-auto text-xl sm:text-2xl lg:text-4xl">
                   Caring With Purpose, Serving With Heart
-                </h1>
-                <h2 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl">
+                </h3>
+                <h4 className="mt-4 text-[#EA9123] font-semibold text-lg sm:text-sm md:text-2xl">
                   Providing compassionate, reliable <br />
                   care that makes a lasting difference in the lives of those we serve.
-                </h2>
+                </h4>
               </motion.div>
             ) : (
               currentService && (

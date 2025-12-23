@@ -169,7 +169,7 @@ export default function Form({ title = "Contact Us", style }: { title?: string, 
     visible: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 100, damping: 15 } },
   };
 
-  // Button animation variants
+  // Button animation variantsF
   const buttonVariants = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 120 } },
